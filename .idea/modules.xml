@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/classerizefrontend.iml" filepath="$PROJECT_DIR$/.idea/classerizefrontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/classerize-frontend.iml" filepath="$PROJECT_DIR$/.idea/classerize-frontend.iml" />
     </modules>
   </component>
 </project>
