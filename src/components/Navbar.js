@@ -1,40 +1,26 @@
-import { destroyCookie } from 'nookies';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { FaHome, FaUserCircle } from 'react-icons/fa';
 
-export default function Navbar() {
+const Navbar = () => {
     const router = useRouter();
 
-    const handleLogout = () => {
-        destroyCookie(null, 'token');
-        router.push('/login');
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+            router.push('/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     return (
-        <nav className="bg-blue-800 p-4 shadow-md">
-            <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-white">Classerize</h1>
-                <ul className="flex space-x-6 text-white">
-                    <li>
-                        <Link href="/" className="flex items-center space-x-1 hover:underline">
-                            <FaHome />
-                            <span>Home</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/dashboard" className="flex items-center space-x-1 hover:underline">
-                            <FaUserCircle />
-                            <span>Dashboard</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <button onClick={handleLogout} className="hover:underline">
-                            Logout
-                        </button>
-                    </li>
-                </ul>
-            </div>
+        <nav className="flex items-center justify-between p-4 bg-blue-500 text-white">
+            <h1>Classerize</h1>
+            <button onClick={handleLogout} className="bg-red-500 p-2 rounded">
+                Logout
+            </button>
         </nav>
     );
-}
+};
+
+export default Navbar;

@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 
-export function middleware(request) {
-    const token = request.cookies.get('token')?.value;
+export async function middleware(request) {
+    const token = request.cookies.get('token');
 
-    // If token is missing, redirect to login page
+    // If no token is present and trying to access protected routes
     if (!token && request.nextUrl.pathname.startsWith('/dashboard')) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
     return NextResponse.next();
 }
-
-export const config = {
-    matcher: ['/dashboard/:path*'], // Apply middleware to the dashboard pages
-};

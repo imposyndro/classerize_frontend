@@ -9,13 +9,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#4f46e5', // Blueish shade for LMS feel
-        secondary: '#10b981', // Green for actions like buttons
-        neutral: '#f3f4f6', // Light gray for backgrounds
-        accent: '#f59e0b', // Orange for highlights
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        light: '#f8fafc', // A lighter background for contrast
+        primary: '#1a73e8', // Softer blue for readability
+        secondary: '#34a853', // Softer green
+        neutral: '#ffffff', // Lighter neutral for readability
+        accent: '#fbbc05', // Softer accent color for highlights
+        background: '#f5f5f5', // Light gray for overall background
+        foreground: '#202124', // Dark gray for text foreground
+        light: '#f1f3f4',
+        textPrimary: '#333333', // Darker text color for high contrast
+        textSecondary: '#666666', // Lighter text color for subtitles
       },
       boxShadow: {
         card: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
@@ -31,13 +33,18 @@ module.exports = {
         sans: ['Inter', 'sans-serif'],
         heading: ['Poppins', 'sans-serif'],
       },
+      textColor: {
+        primary: '#333333',
+        secondary: '#666666',
+        accent: '#fbbc05',
+      },
       transitionDuration: {
         300: '300ms',
       },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // Helps style forms cleanly and consistently
-    require('@tailwindcss/typography'), // Improves readability of text-heavy pages
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
   ],
 };
