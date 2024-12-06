@@ -1,3 +1,4 @@
+// app/dashboard/layout.js
 import DashboardLayout from '@/components/layouts/DashboardLayout';
 
 export default function DashboardRouteLayout({ children }) {
