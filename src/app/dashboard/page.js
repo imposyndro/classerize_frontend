@@ -1,90 +1,131 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import { addCourse } from '@/services/unifiedAPI';
+import React, { useState, useEffect } from "react";
+import Navbar from "@/components/Navbar"; // Navbar included for logged-in pages
+import CoursesList from "@/components/CoursesList";
+import AssignmentsList from "@/components/AssignmentsList";
 
-const DashboardPage = () => {
-    const [lms, setLms] = useState('canvas'); // Default to Canvas
-    const [newCourseName, setNewCourseName] = useState('');
-    const [newCourseDescription, setNewCourseDescription] = useState('');
-    const [courses, setCourses] = useState([]);
-    const [loading, setLoading] = useState(false);
+export default function DashboardPage() {
+    const [linkedAccounts, setLinkedAccounts] = useState([]);
+    const [canvasToken, setCanvasToken] = useState("");
+    const [linkingError, setLinkingError] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
 
-    const handleAddCourse = async () => {
-        if (!newCourseName.trim()) {
-            alert('Course name cannot be empty!');
+    // Fetch linked LMS accounts
+    useEffect(() => {
+        const fetchLinkedAccounts = async () => {
+            try {
+                const response = await fetch("/api/linked-accounts", {
+                    method: "GET",
+                    credentials: "include",
+                });
+                if (!response.ok) {
+                    throw new Error("No linked accounts found.");
+                }
+                const accounts = await response.json();
+                setLinkedAccounts(accounts);
+            } catch (error) {
+                console.error("Error fetching linked accounts:", error.message);
+                setLinkedAccounts([]); // Gracefully handle no linked accounts
+            }
+        };
+        fetchLinkedAccounts();
+    }, []);
+
+    // Handle linking Canvas account
+    const handleLinkCanvasAccount = async (e) => {
+        e.preventDefault();
+        setLinkingError("");
+        setSuccessMessage("");
+
+        if (!canvasToken.trim()) {
+            setLinkingError("Canvas token is required.");
             return;
         }
+
         try {
-            setLoading(true);
-            const courseDetails = { name: newCourseName, description: newCourseDescription };
-            const response = await addCourse({ lms, courseDetails });
-            setCourses((prevCourses) => [...prevCourses, response]);
-            setNewCourseName('');
-            setNewCourseDescription('');
-            alert('Course added successfully!');
+            const response = await fetch("/api/linked-accounts/canvas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ token: canvasToken }),
+            });
+
+            if (!response.ok) {
+                const { error } = await response.json();
+                throw new Error(error || "Failed to link Canvas account.");
+            }
+
+            const { message } = await response.json();
+            setSuccessMessage(message);
+            setCanvasToken(""); // Clear input field
+            // Re-fetch linked accounts after successful linking
+            fetchLinkedAccounts();
         } catch (error) {
-            console.error('Failed to add course:', error);
-            alert('An error occurred while adding the course.');
-        } finally {
-            setLoading(false);
+            setLinkingError(error.message);
         }
     };
 
     return (
-        <div className="flex flex-col items-center">
-            <h1 className="text-3xl font-heading mb-6 text-center">LMS Dashboard</h1>
+        <div className="min-h-screen bg-gray-100">
+            {/* Navbar */}
+            <Navbar />
 
-            {/* Add Course Form */}
-            <div className="mb-6 w-full md:w-2/3">
-                <h2 className="text-xl font-bold mb-4">Add a New Course</h2>
-                <div className="flex flex-col gap-4">
-                    <select
-                        className="border border-gray-300 p-2 rounded-md"
-                        value={lms}
-                        onChange={(e) => setLms(e.target.value)}
-                    >
-                        <option value="canvas">Canvas</option>
-                        <option value="moodle">Moodle</option>
-                        <option value="google_classroom">Google Classroom</option>
-                        {/* Add more LMS options here */}
-                    </select>
-                    <input
-                        type="text"
-                        className="border border-gray-300 p-2 rounded-md"
-                        placeholder="Course Name"
-                        value={newCourseName}
-                        onChange={(e) => setNewCourseName(e.target.value)}
-                    />
-                    <textarea
-                        className="border border-gray-300 p-2 rounded-md"
-                        placeholder="Course Description"
-                        value={newCourseDescription}
-                        onChange={(e) => setNewCourseDescription(e.target.value)}
-                    />
-                    <button
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                        onClick={handleAddCourse}
-                        disabled={loading}
-                    >
-                        {loading ? 'Adding...' : 'Add Course'}
-                    </button>
+            <div className="container mx-auto py-10">
+                <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
+                    Welcome to Your Dashboard
+                </h1>
+
+                {/* Linked Accounts Section */}
+                <div className="bg-white shadow rounded-lg p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                        Linked Accounts
+                    </h2>
+                    {linkedAccounts.length > 0 ? (
+                        <ul className="list-disc pl-5 space-y-2">
+                            {linkedAccounts.map((account) => (
+                                <li key={account.account_id} className="text-gray-600">
+                                    {account.lms_name} - {account.lms_user_id}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-500">No linked accounts yet.</p>
+                    )}
                 </div>
-            </div>
 
-            {/* Courses List */}
-            <div className="mb-4 w-full md:w-2/3">
-                <h2 className="text-xl font-bold mb-2">Your Courses</h2>
-                <ul className="list-disc pl-6">
-                    {courses.map((course, index) => (
-                        <li key={index}>
-                            {course.name || 'Untitled Course'} ({course.lms})
-                        </li>
-                    ))}
-                </ul>
+                {/* Link Canvas Account Section */}
+                <div className="bg-white shadow rounded-lg p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+                        Link Canvas Account
+                    </h2>
+                    <form onSubmit={handleLinkCanvasAccount} className="space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Enter Canvas Token"
+                            value={canvasToken}
+                            onChange={(e) => setCanvasToken(e.target.value)}
+                            className="w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                        />
+                        <button
+                            type="submit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
+                        >
+                            Link Canvas Account
+                        </button>
+                    </form>
+                    {linkingError && (
+                        <p className="text-red-500 mt-2">{linkingError}</p>
+                    )}
+                    {successMessage && (
+                        <p className="text-green-500 mt-2">{successMessage}</p>
+                    )}
+                </div>
+
+                {/* Existing Features */}
+                {/* <CoursesList />
+                <AssignmentsList />*/}
             </div>
         </div>
     );
-};
-
-export default DashboardPage;
+}
