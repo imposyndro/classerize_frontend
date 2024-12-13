@@ -1,130 +1,98 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar"; // Navbar included for logged-in pages
-import CoursesList from "@/components/CoursesList";
-import AssignmentsList from "@/components/AssignmentsList";
+import Navbar from "@/components/dashboard/Navbar";
+import AccountCard from "@/components/dashboard/AccountCard";
+import CanvasLinker from "@/components/dashboard/CanvasLinker";
 
 export default function DashboardPage() {
     const [linkedAccounts, setLinkedAccounts] = useState([]);
-    const [canvasToken, setCanvasToken] = useState("");
-    const [linkingError, setLinkingError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
 
-    // Fetch linked LMS accounts
-    useEffect(() => {
-        const fetchLinkedAccounts = async () => {
-            try {
-                const response = await fetch("/api/linked-accounts", {
-                    method: "GET",
-                    credentials: "include",
-                });
-                if (!response.ok) {
-                    throw new Error("No linked accounts found.");
-                }
-                const accounts = await response.json();
-                setLinkedAccounts(accounts);
-            } catch (error) {
-                console.error("Error fetching linked accounts:", error.message);
-                setLinkedAccounts([]); // Gracefully handle no linked accounts
-            }
-        };
-        fetchLinkedAccounts();
-    }, []);
-
-    // Handle linking Canvas account
-    const handleLinkCanvasAccount = async (e) => {
-        e.preventDefault();
-        setLinkingError("");
-        setSuccessMessage("");
-
-        if (!canvasToken.trim()) {
-            setLinkingError("Canvas token is required.");
-            return;
-        }
-
+    const fetchLinkedAccounts = async () => {
         try {
-            const response = await fetch("/api/linked-accounts/canvas", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch("http://localhost:5000/api/linked-accounts", {
+                method: "GET",
                 credentials: "include",
-                body: JSON.stringify({ token: canvasToken }),
+                headers: { "Content-Type": "application/json" },
             });
 
-            if (!response.ok) {
-                const { error } = await response.json();
-                throw new Error(error || "Failed to link Canvas account.");
-            }
+            if (!response.ok) throw new Error("Failed to fetch linked accounts.");
+            const accounts = await response.json();
 
-            const { message } = await response.json();
-            setSuccessMessage(message);
-            setCanvasToken(""); // Clear input field
-            // Re-fetch linked accounts after successful linking
-            fetchLinkedAccounts();
+            const accountsWithCourses = await Promise.all(
+                accounts.map(async (account) => {
+                    try {
+                        const courseResponse = await fetch(
+                            `http://localhost:5000/api/linked-accounts/accounts/${account.account_id}/courses`,
+                            { method: "GET", credentials: "include" }
+                        );
+                        if (!courseResponse.ok) throw new Error("Failed to fetch courses.");
+                        const { courses } = await courseResponse.json();
+                        return { ...account, courses };
+                    } catch (error) {
+                        console.error(
+                            `Error fetching courses for account ${account.account_id}:`,
+                            error.message
+                        );
+                        return { ...account, courses: [] };
+                    }
+                })
+            );
+
+            setLinkedAccounts(accountsWithCourses);
         } catch (error) {
-            setLinkingError(error.message);
+            console.error("Error fetching linked accounts:", error.message);
+            setLinkedAccounts([]);
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Navbar */}
-            <Navbar />
+    const updateAccountTitle = async (accountId, newTitle) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/linked-accounts/${accountId}/update-title`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ title: newTitle }),
+            });
 
-            <div className="container mx-auto py-10">
+            if (!response.ok) throw new Error("Failed to update account title.");
+
+            // Optionally, refresh the linked accounts after updating
+            fetchLinkedAccounts();
+        } catch (error) {
+            console.error("Error updating account title:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchLinkedAccounts();
+    }, []);
+
+    return (
+        <div className="min-h-screen flex flex-col bg-gray-100">
+            <Navbar />
+            <div className="container mx-auto py-10 flex-1">
                 <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
                     Welcome to Your Dashboard
                 </h1>
-
-                {/* Linked Accounts Section */}
-                <div className="bg-white shadow rounded-lg p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                        Linked Accounts
-                    </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                     {linkedAccounts.length > 0 ? (
-                        <ul className="list-disc pl-5 space-y-2">
-                            {linkedAccounts.map((account) => (
-                                <li key={account.account_id} className="text-gray-600">
-                                    {account.lms_name} - {account.lms_user_id}
-                                </li>
-                            ))}
-                        </ul>
+                        linkedAccounts.map((account) => (
+                            <AccountCard
+                                key={account.account_id}
+                                account={account}
+                                onUpdateTitle={updateAccountTitle} // Pass the function here
+                            />
+                        ))
                     ) : (
-                        <p className="text-gray-500">No linked accounts yet.</p>
+                        <p className="text-gray-500 col-span-full text-center">
+                            No linked accounts yet.
+                        </p>
                     )}
                 </div>
-
-                {/* Link Canvas Account Section */}
-                <div className="bg-white shadow rounded-lg p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-                        Link Canvas Account
-                    </h2>
-                    <form onSubmit={handleLinkCanvasAccount} className="space-y-4">
-                        <input
-                            type="text"
-                            placeholder="Enter Canvas Token"
-                            value={canvasToken}
-                            onChange={(e) => setCanvasToken(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-                        />
-                        <button
-                            type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring focus:ring-blue-300"
-                        >
-                            Link Canvas Account
-                        </button>
-                    </form>
-                    {linkingError && (
-                        <p className="text-red-500 mt-2">{linkingError}</p>
-                    )}
-                    {successMessage && (
-                        <p className="text-green-500 mt-2">{successMessage}</p>
-                    )}
-                </div>
-
-                {/* Existing Features */}
-                {/* <CoursesList />
-                <AssignmentsList />*/}
+            </div>
+            <div className="container mx-auto py-4">
+                <CanvasLinker onLinkSuccess={fetchLinkedAccounts} />
             </div>
         </div>
     );

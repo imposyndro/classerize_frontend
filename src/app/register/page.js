@@ -14,7 +14,7 @@ export default function RegisterPage() {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', { username, email, password });
+            const response = await axios.post('http://localhost:5000/api/users/register', { username, email, password });
             if (response.status === 201) {
                 router.push('/login');
             } else {
