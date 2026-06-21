@@ -5,7 +5,13 @@ import Navbar from "@/components/dashboard/Navbar";
 import { withAuth, useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
-const TABS = ["Linked Accounts", "Notifications", "Connected Services"];
+const TABS = ["Linked Accounts", "Notifications", "AI", "Connected Services"];
+
+const MODEL_LABELS = {
+    "gemini-2.5-flash-lite-preview-06-17": "Gemini 2.5 Flash-Lite (cheapest)",
+    "gemini-2.5-flash": "Gemini 2.5 Flash (balanced)",
+    "gemini-2.5-pro": "Gemini 2.5 Pro (most capable)",
+};
 
 function SettingsPage() {
     const { user } = useAuth();
@@ -14,6 +20,14 @@ function SettingsPage() {
     const [notifPrefs, setNotifPrefs] = useState(null);
     const [saving, setSaving] = useState(false);
     const [message, setMessage] = useState(null);
+
+    // AI settings state
+    const [aiSettings, setAISettings] = useState(null);
+    const [byokKey, setByokKey] = useState("");
+    const [selectedModel, setSelectedModel] = useState("");
+    const [showKey, setShowKey] = useState(false);
+    const [aiSaving, setAISaving] = useState(false);
+    const [aiMessage, setAIMessage] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -26,6 +40,17 @@ function SettingsPage() {
         };
         fetchData();
     }, []);
+
+    useEffect(() => {
+        if (activeTab !== "AI" || aiSettings) return;
+        apiClient.get("/api/users/ai-settings").then(async (res) => {
+            if (res?.ok) {
+                const data = await res.json();
+                setAISettings(data);
+                setSelectedModel(data.ai_model);
+            }
+        });
+    }, [activeTab, aiSettings]);
 
     const saveNotifPrefs = async () => {
         setSaving(true);
@@ -42,6 +67,43 @@ function SettingsPage() {
     const deleteAccount = async (accountId) => {
         await apiClient.delete(`/api/linked-accounts/${accountId}`);
         setAccounts(accounts.filter((a) => a.account_id !== accountId));
+    };
+
+    const saveAISettings = async () => {
+        setAISaving(true);
+        setAIMessage(null);
+        try {
+            const body = { ai_model: selectedModel };
+            if (byokKey) body.gemini_api_key = byokKey;
+            const res = await apiClient.patch("/api/users/ai-settings", body);
+            if (res?.ok) {
+                setAIMessage({ type: "success", text: "AI settings saved." });
+                setByokKey("");
+                // Refresh to reflect new key presence
+                const refreshed = await apiClient.get("/api/users/ai-settings");
+                if (refreshed?.ok) setAISettings(await refreshed.json());
+            } else {
+                const err = await res.json().catch(() => ({}));
+                setAIMessage({ type: "error", text: err.error || "Save failed." });
+            }
+        } finally {
+            setAISaving(false);
+            setTimeout(() => setAIMessage(null), 4000);
+        }
+    };
+
+    const clearBYOKKey = async () => {
+        setAISaving(true);
+        try {
+            const res = await apiClient.patch("/api/users/ai-settings", { clear_key: true });
+            if (res?.ok) {
+                setAIMessage({ type: "success", text: "API key removed." });
+                setAISettings((prev) => ({ ...prev, has_byok_key: false }));
+            }
+        } finally {
+            setAISaving(false);
+            setTimeout(() => setAIMessage(null), 3000);
+        }
     };
 
     return (
@@ -132,6 +194,130 @@ function SettingsPage() {
                         <button onClick={saveNotifPrefs} disabled={saving} className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50">
                             {saving ? "Saving..." : "Save Preferences"}
                         </button>
+                    </div>
+                )}
+
+                {/* AI tab */}
+                {activeTab === "AI" && (
+                    <div className="space-y-6">
+                        {/* Tier badge */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <div className="flex items-center justify-between mb-1">
+                                <h3 className="font-semibold text-gray-800">AI Plan</h3>
+                                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                                    aiSettings?.subscription_tier === "pro"
+                                        ? "bg-purple-100 text-purple-700"
+                                        : "bg-gray-100 text-gray-600"
+                                }`}>
+                                    {aiSettings?.subscription_tier === "pro" ? "Pro" : "Free"}
+                                </span>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                                {aiSettings?.subscription_tier === "pro"
+                                    ? "You have access to Gemini 2.5 Flash on the platform account."
+                                    : "Using Gemini 2.5 Flash-Lite on our shared free quota."}
+                            </p>
+
+                            {aiSettings?.subscription_tier !== "pro" && (
+                                <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
+                                    <p className="text-sm font-semibold text-purple-800 mb-1">Upgrade to Pro</p>
+                                    <p className="text-xs text-purple-700 mb-3">
+                                        Get Gemini 2.5 Flash for faster, higher-quality AI summaries and study plans.
+                                        No rate limits.
+                                    </p>
+                                    <button
+                                        disabled
+                                        className="text-xs bg-purple-600 text-white px-4 py-1.5 rounded-lg opacity-50 cursor-not-allowed"
+                                    >
+                                        Coming soon
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* BYOK section */}
+                        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+                            <div>
+                                <h3 className="font-semibold text-gray-800 mb-1">Use Your Own Google AI Key</h3>
+                                <p className="text-sm text-gray-500">
+                                    Add your own{" "}
+                                    <span className="font-mono text-xs bg-gray-100 px-1 rounded">AIza...</span> key
+                                    from{" "}
+                                    <span className="text-blue-600 underline cursor-not-allowed" title="aistudio.google.com/apikey">
+                                        Google AI Studio
+                                    </span>
+                                    {" "}to bypass platform limits and pick your own model.
+                                    Your key is encrypted at rest.
+                                </p>
+                            </div>
+
+                            {aiMessage && (
+                                <div className={`p-3 rounded text-sm ${aiMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                                    {aiMessage.text}
+                                </div>
+                            )}
+
+                            {aiSettings?.has_byok_key && (
+                                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <span className="text-sm text-green-700 font-medium">API key saved</span>
+                                    <button
+                                        onClick={clearBYOKKey}
+                                        disabled={aiSaving}
+                                        className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                                    >
+                                        Remove key
+                                    </button>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    {aiSettings?.has_byok_key ? "Replace API key" : "Google AI API key"}
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type={showKey ? "text" : "password"}
+                                        placeholder="AIza..."
+                                        value={byokKey}
+                                        onChange={(e) => setByokKey(e.target.value)}
+                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowKey((v) => !v)}
+                                        className="text-xs text-gray-500 border border-gray-300 rounded-lg px-3 hover:bg-gray-50"
+                                    >
+                                        {showKey ? "Hide" : "Show"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Preferred model</label>
+                                <select
+                                    value={selectedModel}
+                                    onChange={(e) => setSelectedModel(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    {(aiSettings?.allowed_models || []).map((m) => (
+                                        <option key={m} value={m}>
+                                            {MODEL_LABELS[m] || m}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="text-xs text-gray-400 mt-1">
+                                    Model selection only takes effect when using your own API key.
+                                </p>
+                            </div>
+
+                            <button
+                                onClick={saveAISettings}
+                                disabled={aiSaving || (!byokKey && selectedModel === aiSettings?.ai_model)}
+                                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                            >
+                                {aiSaving ? "Saving..." : "Save AI Settings"}
+                            </button>
+                        </div>
                     </div>
                 )}
 
