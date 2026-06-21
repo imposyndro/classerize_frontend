@@ -2,12 +2,30 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import apiClient from "@/lib/apiClient";
 
-export default function AccountCard({ account, onUpdateTitle, onDelete }) {
+export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSuccess }) {
     const router = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(account.title || account.lms_name || "Unknown LMS");
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [syncing, setSyncing] = useState(false);
+    const [syncResult, setSyncResult] = useState(null);
+
+    const handleSync = async () => {
+        setSyncing(true);
+        setSyncResult(null);
+        try {
+            const res = await apiClient.post(`/api/lms/sync/${account.account_id}`);
+            const data = res?.ok ? await res.json() : null;
+            setSyncResult(data ? { ok: true, text: `Synced: ${data.coursesUpserted ?? 0} courses, ${data.assignmentsUpserted ?? 0} assignments` } : { ok: false, text: "Sync failed." });
+            onSyncSuccess?.();
+        } catch {
+            setSyncResult({ ok: false, text: "Sync error." });
+        } finally {
+            setSyncing(false);
+        }
+    };
 
     const handleSave = () => {
         setIsEditing(false);
@@ -55,9 +73,32 @@ export default function AccountCard({ account, onUpdateTitle, onDelete }) {
 
             {/* Meta */}
             <p className="text-xs text-gray-400 truncate">{account.api_base_url || "No URL"}</p>
-            <span className="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full w-fit">
-                {account.lms_name}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                    {account.lms_name}
+                </span>
+                {account.last_synced && (
+                    <span className="text-xs text-gray-400">
+                        Last synced: {new Date(account.last_synced).toLocaleString()}
+                    </span>
+                )}
+            </div>
+
+            {/* Sync */}
+            <div className="flex items-center gap-3">
+                <button
+                    onClick={handleSync}
+                    disabled={syncing}
+                    className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition disabled:opacity-50"
+                >
+                    {syncing ? "Syncing…" : "Sync Now"}
+                </button>
+                {syncResult && (
+                    <span className={`text-xs ${syncResult.ok ? "text-green-600" : "text-red-500"}`}>
+                        {syncResult.text}
+                    </span>
+                )}
+            </div>
 
             {/* Courses */}
             <div>

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/dashboard/Navbar";
 import AccountCard from "@/components/dashboard/AccountCard";
 import CanvasLinker from "@/components/dashboard/CanvasLinker";
+import CalendarView from "@/components/dashboard/CalendarView";
 import { withAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
@@ -80,6 +81,7 @@ function DashboardPage() {
                                 account={account}
                                 onUpdateTitle={updateAccountTitle}
                                 onDelete={deleteAccount}
+                                onSyncSuccess={fetchLinkedAccounts}
                             />
                         ))}
                     </div>
@@ -90,8 +92,11 @@ function DashboardPage() {
                     </div>
                 )}
             </main>
-            <div className="container mx-auto px-4 pb-10">
+            <div className="container mx-auto px-4 pb-6">
                 <CanvasLinker onLinkSuccess={fetchLinkedAccounts} />
+            </div>
+            <div className="container mx-auto px-4 pb-10">
+                <CalendarView />
             </div>
         </div>
     );

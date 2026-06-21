@@ -12,7 +12,9 @@ export default function Navbar() {
     useEffect(() => {
         if (!user) return;
         apiClient.get("/api/notifications")
-            .then((data) => {
+            .then(async (res) => {
+                if (!res?.ok) return;
+                const data = await res.json();
                 const unread = (data.notifications || []).filter((n) => !n.read_at).length;
                 setUnreadCount(unread);
             })

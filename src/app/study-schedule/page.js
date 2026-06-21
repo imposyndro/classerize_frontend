@@ -15,12 +15,14 @@ function StudySchedulePage() {
         setLoading(true);
         setError('');
         try {
-            const [sched, urg] = await Promise.all([
+            const [schedRes, urgRes] = await Promise.all([
                 apiClient.get('/api/ai/study-schedule'),
                 apiClient.get('/api/ai/urgency'),
             ]);
-            setSchedule(sched.schedule || '');
-            setUrgency(urg.urgency || []);
+            const schedData = schedRes?.ok ? await schedRes.json() : {};
+            const urgData  = urgRes?.ok  ? await urgRes.json()  : {};
+            setSchedule(schedData.schedule || '');
+            setUrgency(urgData.urgency || []);
         } catch (e) {
             setError('Failed to load AI recommendations. Ensure your AI API key is configured.');
         } finally {
