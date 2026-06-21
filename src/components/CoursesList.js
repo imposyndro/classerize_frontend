@@ -1,48 +1,56 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { FaBook, FaBookOpen } from 'react-icons/fa';
+"use client";
 
-export default function CoursesList({ userId }) {
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import apiClient from "@/lib/apiClient";
+
+export default function CoursesList() {
+    const router = useRouter();
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
-        axios.get('/api/courses', { params: { userId } })
-            .then(response => {
-                setCourses(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching courses:', error);
-            })
-            .finally(() => {
+        const fetch = async () => {
+            try {
+                // Courses are fetched per-account from the dashboard.
+                // This component uses the linked-accounts aggregated view.
+                const res = await apiClient.get("/api/linked-accounts");
+                if (!res?.ok) return;
+                const accounts = await res.json();
+                const allCourses = [];
+                for (const acct of accounts) {
+                    const cr = await apiClient.get(`/api/linked-accounts/accounts/${acct.account_id}/courses`);
+                    if (cr?.ok) {
+                        const { courses: c } = await cr.json();
+                        c.forEach((course) => allCourses.push({ ...course, lms_name: acct.lms_name, account_title: acct.title || acct.lms_name }));
+                    }
+                }
+                setCourses(allCourses);
+            } finally {
                 setLoading(false);
-            });
-    }, [userId]);
+            }
+        };
+        fetch();
+    }, []);
 
-    if (loading) {
-        return <div className="text-gray-500 text-center mt-4">Loading courses...</div>;
-    }
+    if (loading) return <p className="text-gray-400 text-sm">Loading courses...</p>;
+    if (!courses.length) return <p className="text-gray-500 text-sm">No courses found.</p>;
 
     return (
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-semibold mb-4">Your Courses</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {courses.map(course => (
-                    <div key={course.courseId} className="border p-4 rounded-lg flex flex-col items-start">
-                        <h3 className="font-bold text-lg">{course.courseName}</h3>
-                        <p className="text-gray-600">{course.institutionName}</p>
-                        {course.status === 'in-progress' ? (
-                            <FaBookOpen className="text-blue-500 mb-2" />
-                        ) : (
-                            <FaBook className="text-green-500 mb-2" />
-                        )}
-                        <button className="mt-auto bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                            View Course Details
-                        </button>
-                    </div>
-                ))}
-            </div>
+        <div className="grid gap-4 md:grid-cols-2">
+            {courses.map((c) => (
+                <div key={c.id} className="bg-white rounded-lg shadow p-4">
+                    <p className="font-semibold text-gray-800">{c.name}</p>
+                    {c.course_code && <p className="text-xs text-gray-400">{c.course_code}</p>}
+                    <span className="inline-block mt-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{c.lms_name}</span>
+                    <button
+                        onClick={() => router.push(`/course/${c.id}`)}
+                        className="mt-3 text-xs text-blue-600 hover:underline block"
+                    >
+                        View details →
+                    </button>
+                </div>
+            ))}
         </div>
     );
 }

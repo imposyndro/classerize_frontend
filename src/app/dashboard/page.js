@@ -1,99 +1,100 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/dashboard/Navbar";
 import AccountCard from "@/components/dashboard/AccountCard";
 import CanvasLinker from "@/components/dashboard/CanvasLinker";
+import { withAuth } from "@/context/AuthContext";
+import apiClient from "@/lib/apiClient";
 
-export default function DashboardPage() {
+function DashboardPage() {
     const [linkedAccounts, setLinkedAccounts] = useState([]);
+    const [loadingAccounts, setLoadingAccounts] = useState(true);
 
-    const fetchLinkedAccounts = async () => {
+    const fetchLinkedAccounts = useCallback(async () => {
+        setLoadingAccounts(true);
         try {
-            const response = await fetch("http://localhost:5000/api/linked-accounts", {
-                method: "GET",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-            });
+            const res = await apiClient.get("/api/linked-accounts");
+            if (!res?.ok) throw new Error("Failed to fetch accounts.");
+            const accounts = await res.json();
 
-            if (!response.ok) throw new Error("Failed to fetch linked accounts.");
-            const accounts = await response.json();
-
+            // Fetch courses for each account in parallel
             const accountsWithCourses = await Promise.all(
                 accounts.map(async (account) => {
                     try {
-                        const courseResponse = await fetch(
-                            `http://localhost:5000/api/linked-accounts/accounts/${account.account_id}/courses`,
-                            { method: "GET", credentials: "include" }
+                        const courseRes = await apiClient.get(
+                            `/api/linked-accounts/accounts/${account.account_id}/courses`
                         );
-                        if (!courseResponse.ok) throw new Error("Failed to fetch courses.");
-                        const { courses } = await courseResponse.json();
+                        if (!courseRes?.ok) return { ...account, courses: [] };
+                        const { courses } = await courseRes.json();
                         return { ...account, courses };
-                    } catch (error) {
-                        console.error(
-                            `Error fetching courses for account ${account.account_id}:`,
-                            error.message
-                        );
+                    } catch {
                         return { ...account, courses: [] };
                     }
                 })
             );
 
             setLinkedAccounts(accountsWithCourses);
-        } catch (error) {
-            console.error("Error fetching linked accounts:", error.message);
+        } catch {
             setLinkedAccounts([]);
+        } finally {
+            setLoadingAccounts(false);
         }
-    };
+    }, []);
 
     const updateAccountTitle = async (accountId, newTitle) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/linked-accounts/${accountId}/update-title`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ title: newTitle }),
-            });
+        await apiClient.patch(`/api/linked-accounts/${accountId}/update-title`, { title: newTitle });
+        fetchLinkedAccounts();
+    };
 
-            if (!response.ok) throw new Error("Failed to update account title.");
-
-            // Optionally, refresh the linked accounts after updating
-            fetchLinkedAccounts();
-        } catch (error) {
-            console.error("Error updating account title:", error.message);
-        }
+    const deleteAccount = async (accountId) => {
+        await apiClient.delete(`/api/linked-accounts/${accountId}`);
+        fetchLinkedAccounts();
     };
 
     useEffect(() => {
         fetchLinkedAccounts();
-    }, []);
+    }, [fetchLinkedAccounts]);
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
             <Navbar />
-            <div className="container mx-auto py-10 flex-1">
-                <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-                    Welcome to Your Dashboard
-                </h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {linkedAccounts.length > 0 ? (
-                        linkedAccounts.map((account) => (
+            <main className="container mx-auto py-10 px-4 flex-1">
+                <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Dashboard</h1>
+
+                {loadingAccounts ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+                                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
+                                <div className="h-3 bg-gray-100 rounded w-1/2 mb-2" />
+                                <div className="h-3 bg-gray-100 rounded w-2/3" />
+                            </div>
+                        ))}
+                    </div>
+                ) : linkedAccounts.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        {linkedAccounts.map((account) => (
                             <AccountCard
                                 key={account.account_id}
                                 account={account}
-                                onUpdateTitle={updateAccountTitle} // Pass the function here
+                                onUpdateTitle={updateAccountTitle}
+                                onDelete={deleteAccount}
                             />
-                        ))
-                    ) : (
-                        <p className="text-gray-500 col-span-full text-center">
-                            No linked accounts yet.
-                        </p>
-                    )}
-                </div>
-            </div>
-            <div className="container mx-auto py-4">
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-16">
+                        <p className="text-gray-500 text-lg mb-2">No LMS accounts linked yet.</p>
+                        <p className="text-gray-400 text-sm">Connect your Canvas account below to get started.</p>
+                    </div>
+                )}
+            </main>
+            <div className="container mx-auto px-4 pb-10">
                 <CanvasLinker onLinkSuccess={fetchLinkedAccounts} />
             </div>
         </div>
     );
 }
+
+export default withAuth(DashboardPage);
