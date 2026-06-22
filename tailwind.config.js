@@ -1,6 +1,9 @@
 // tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  // Dark mode driven by CSS variables; the selector lets a future theme
+  // toggle force dark via <html data-theme="dark"> and still use dark: variants.
+  darkMode: ["selector", '[data-theme="dark"]'],
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,42 +12,87 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#1a73e8', // Softer blue for readability
-        secondary: '#34a853', // Softer green
-        neutral: '#ffffff', // Lighter neutral for readability
-        accent: '#fbbc05', // Softer accent color for highlights
-        background: '#f5f5f5', // Light gray for overall background
-        foreground: '#202124', // Dark gray for text foreground
-        light: '#f1f3f4',
-        textPrimary: '#333333', // Darker text color for high contrast
-        textSecondary: '#666666', // Lighter text color for subtitles
+        // Brand (indigo)
+        brand: {
+          DEFAULT: "var(--brand)",
+          hover: "var(--brand-hover)",
+          fg: "var(--brand-fg)",
+          subtle: "var(--brand-subtle)",
+        },
+        // Surfaces
+        app: "var(--bg-app)",
+        surface: "var(--bg-surface)",
+        subtle: "var(--bg-subtle)",
+        // Text
+        ink: {
+          DEFAULT: "var(--text-primary)",
+          soft: "var(--text-secondary)",
+          faint: "var(--text-tertiary)",
+        },
+        // Hairlines (usable as border-line / border-line-strong)
+        line: {
+          DEFAULT: "var(--border)",
+          strong: "var(--border-strong)",
+        },
+        // Semantic
+        success: { DEFAULT: "var(--success)", subtle: "var(--success-subtle)" },
+        warning: { DEFAULT: "var(--warning)", subtle: "var(--warning-subtle)" },
+        danger: { DEFAULT: "var(--danger)", subtle: "var(--danger-subtle)" },
+      },
+      borderColor: {
+        DEFAULT: "var(--border)",
       },
       boxShadow: {
-        card: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-        button: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        xs: "var(--shadow-xs)",
+        sm: "var(--shadow-sm)",
+        soft: "var(--shadow-soft)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
       },
       borderRadius: {
-        large: '1.5rem',
+        card: "var(--radius-lg)",
+        tile: "var(--radius-xl)",
+        "2xl": "var(--radius-2xl)",
       },
       spacing: {
-        18: '4.5rem',
+        18: "4.5rem",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Poppins', 'sans-serif'],
+        sans: ["var(--font-geist-sans)", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
       },
-      textColor: {
-        primary: '#333333',
-        secondary: '#666666',
-        accent: '#fbbc05',
+      transitionTimingFunction: {
+        "out-soft": "var(--ease-out)",
+        spring: "var(--ease-spring)",
       },
       transitionDuration: {
-        300: '300ms',
+        fast: "140ms",
+        base: "220ms",
+        slow: "360ms",
+      },
+      keyframes: {
+        fadeUp: {
+          from: { opacity: "0", transform: "translateY(10px)" },
+          to: { opacity: "1", transform: "none" },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        popIn: {
+          "0%": { opacity: "0", transform: "scale(0.96)" },
+          "100%": { opacity: "1", transform: "scale(1)" },
+        },
+      },
+      animation: {
+        "fade-up": "fadeUp var(--dur-slow) var(--ease-out) both",
+        "fade-in": "fadeIn var(--dur-base) var(--ease-out) both",
+        "pop-in": "popIn var(--dur-base) var(--ease-spring) both",
       },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/typography"),
   ],
 };
