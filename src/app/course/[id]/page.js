@@ -46,7 +46,7 @@ function CoursePage({ params }) {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center py-24">
-                    <p className="text-gray-500">Loading course...</p>
+                    <p className="text-ink-faint">Loading course...</p>
                 </div>
             </DashboardLayout>
         );
@@ -56,7 +56,7 @@ function CoursePage({ params }) {
         return (
             <DashboardLayout>
                 <div className="flex items-center justify-center py-24">
-                    <p className="text-red-500">{error}</p>
+                    <p className="text-danger">{error}</p>
                 </div>
             </DashboardLayout>
         );
@@ -66,17 +66,17 @@ function CoursePage({ params }) {
         <DashboardLayout>
             <button
                 onClick={() => router.back()}
-                className="mb-4 text-blue-600 hover:underline text-sm"
+                className="mb-4 text-brand hover:underline text-sm"
             >
                 ← Back to Dashboard
             </button>
 
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">
+            <div className="card p-6 mb-6">
+                <h1 className="text-2xl font-bold text-ink">
                     {course?.name || "Course Details"}
                 </h1>
-                <p className="text-gray-500 mt-1">{course?.course_code || ""}</p>
-                <div className="mt-4 flex gap-6 text-sm text-gray-600">
+                <p className="text-ink-soft mt-1">{course?.course_code || ""}</p>
+                <div className="mt-4 flex gap-6 text-sm text-ink-soft">
                     <span>
                         <strong>Start:</strong>{" "}
                         {course?.start_at ? new Date(course.start_at).toLocaleDateString() : "N/A"}
@@ -93,25 +93,25 @@ function CoursePage({ params }) {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Assignments</h2>
+            <div className="card p-6">
+                <h2 className="text-xl font-semibold text-ink mb-4">Assignments</h2>
                 {assignments.length === 0 ? (
-                    <p className="text-gray-500">No assignments found. Sync your account to pull the latest data.</p>
+                    <p className="text-ink-faint">No assignments found. Sync your account to pull the latest data.</p>
                 ) : (
-                    <ul className="divide-y divide-gray-100">
+                    <ul className="divide-y divide-line">
                         {assignments.map((a) => (
                             <li key={a.assignment_id} className="py-3 flex justify-between items-center">
                                 <div>
-                                    <p className="font-medium text-gray-800">{a.assignment_name}</p>
-                                    <p className="text-sm text-gray-500">
+                                    <p className="font-medium text-ink">{a.assignment_name}</p>
+                                    <p className="text-sm text-ink-soft">
                                         Due: {a.due_date ? new Date(a.due_date).toLocaleDateString() : "No due date"}
                                     </p>
                                 </div>
                                 <span
                                     className={`text-xs px-2 py-1 rounded-full font-medium ${
                                         a.status === "completed"
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-yellow-100 text-yellow-700"
+                                            ? "bg-success-subtle text-success"
+                                            : "bg-warning-subtle text-warning"
                                     }`}
                                 >
                                     {a.status || "pending"}

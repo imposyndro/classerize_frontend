@@ -20,6 +20,8 @@ const MODEL_LABELS = {
     "gemini-2.5-pro": "Gemini 2.5 Pro (most capable)",
 };
 
+const INPUT = "w-full bg-surface text-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand";
+
 function SettingsPage() {
     const { user } = useAuth();
     const [activeTab, setActiveTab] = useState("Linked Accounts");
@@ -135,7 +137,6 @@ function SettingsPage() {
             if (res?.ok) {
                 setAIMessage({ type: "success", text: "AI settings saved." });
                 setByokKey("");
-                // Refresh to reflect new key presence
                 const refreshed = await apiClient.get("/api/users/ai-settings");
                 if (refreshed?.ok) setAISettings(await refreshed.json());
             } else {
@@ -162,38 +163,40 @@ function SettingsPage() {
         }
     };
 
+    const msgCls = (type) => type === "success" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger";
+
     return (
         <DashboardLayout>
             <div className="max-w-3xl">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
+                <h1 className="text-2xl font-bold text-ink mb-6">Settings</h1>
 
                 {globalMessage && (
-                    <div className={`mb-4 p-3 rounded text-sm ${globalMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                    <div className={`mb-4 p-3 rounded-lg text-sm ${msgCls(globalMessage.type)}`}>
                         {globalMessage.text}
                     </div>
                 )}
 
                 {/* Profile card */}
-                <div className="bg-white rounded-lg shadow p-4 mb-6 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+                <div className="card p-4 mb-6 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-brand text-brand-fg flex items-center justify-center font-bold">
                         {user?.username?.[0]?.toUpperCase()}
                     </div>
                     <div>
-                        <p className="font-semibold text-gray-800">{user?.username}</p>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                        <p className="font-semibold text-ink">{user?.username}</p>
+                        <p className="text-sm text-ink-soft">{user?.email}</p>
                     </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-gray-200 mb-6">
+                <div className="flex border-b border-line mb-6 overflow-x-auto">
                     {TABS.map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-2 text-sm font-medium transition ${
+                            className={`px-4 py-2 text-sm font-medium transition whitespace-nowrap ${
                                 activeTab === tab
-                                    ? "border-b-2 border-blue-600 text-blue-600"
-                                    : "text-gray-500 hover:text-gray-700"
+                                    ? "border-b-2 border-brand text-brand"
+                                    : "text-ink-soft hover:text-ink"
                             }`}
                         >
                             {tab}
@@ -205,21 +208,21 @@ function SettingsPage() {
                 {activeTab === "Linked Accounts" && (
                     <div className="space-y-3">
                         {accounts.length === 0 ? (
-                            <p className="text-gray-500">No accounts linked. Go to the dashboard to add one.</p>
+                            <p className="text-ink-faint">No accounts linked. Go to the dashboard to add one.</p>
                         ) : accounts.map((a) => (
-                            <div key={a.account_id} className="bg-white rounded-lg shadow p-4 flex justify-between items-center">
+                            <div key={a.account_id} className="card p-4 flex justify-between items-center">
                                 <div>
-                                    <p className="font-medium text-gray-800">{a.title || a.lms_name}</p>
-                                    <p className="text-xs text-gray-400">{a.api_base_url}</p>
+                                    <p className="font-medium text-ink">{a.title || a.lms_name}</p>
+                                    <p className="text-xs text-ink-faint">{a.api_base_url}</p>
                                     {a.last_synced && (
-                                        <p className="text-xs text-gray-400 mt-0.5">
+                                        <p className="text-xs text-ink-faint mt-0.5">
                                             Last synced: {new Date(a.last_synced).toLocaleString()}
                                         </p>
                                     )}
                                 </div>
                                 <button
                                     onClick={() => deleteAccount(a.account_id)}
-                                    className="text-xs text-red-500 hover:underline"
+                                    className="text-xs text-danger hover:underline"
                                 >
                                     Remove
                                 </button>
@@ -230,29 +233,29 @@ function SettingsPage() {
 
                 {/* Notifications tab */}
                 {activeTab === "Notifications" && notifPrefs && (
-                    <div className="bg-white rounded-lg shadow p-6 space-y-4">
+                    <div className="card p-6 space-y-4">
                         {message && (
-                            <div className={`p-3 rounded text-sm ${message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                            <div className={`p-3 rounded-lg text-sm ${msgCls(message.type)}`}>
                                 {message.text}
                             </div>
                         )}
                         <label className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Email notifications</span>
-                            <input type="checkbox" checked={notifPrefs.email_enabled} onChange={(e) => setNotifPrefs({ ...notifPrefs, email_enabled: e.target.checked })} className="h-4 w-4" />
+                            <span className="text-sm font-medium text-ink-soft">Email notifications</span>
+                            <input type="checkbox" checked={notifPrefs.email_enabled} onChange={(e) => setNotifPrefs({ ...notifPrefs, email_enabled: e.target.checked })} className="h-4 w-4 accent-brand" />
                         </label>
                         <label className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">In-app notifications</span>
-                            <input type="checkbox" checked={notifPrefs.web_enabled} onChange={(e) => setNotifPrefs({ ...notifPrefs, web_enabled: e.target.checked })} className="h-4 w-4" />
+                            <span className="text-sm font-medium text-ink-soft">In-app notifications</span>
+                            <input type="checkbox" checked={notifPrefs.web_enabled} onChange={(e) => setNotifPrefs({ ...notifPrefs, web_enabled: e.target.checked })} className="h-4 w-4 accent-brand" />
                         </label>
                         <label className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Daily digest</span>
-                            <input type="checkbox" checked={notifPrefs.daily_digest} onChange={(e) => setNotifPrefs({ ...notifPrefs, daily_digest: e.target.checked })} className="h-4 w-4" />
+                            <span className="text-sm font-medium text-ink-soft">Daily digest</span>
+                            <input type="checkbox" checked={notifPrefs.daily_digest} onChange={(e) => setNotifPrefs({ ...notifPrefs, daily_digest: e.target.checked })} className="h-4 w-4 accent-brand" />
                         </label>
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-gray-700">Alert hours before deadline</span>
-                            <input type="number" min={1} max={168} value={notifPrefs.deadline_hours} onChange={(e) => setNotifPrefs({ ...notifPrefs, deadline_hours: Number(e.target.value) })} className="w-20 border border-gray-300 rounded px-2 py-1 text-sm text-right" />
+                            <span className="text-sm font-medium text-ink-soft">Alert hours before deadline</span>
+                            <input type="number" min={1} max={168} value={notifPrefs.deadline_hours} onChange={(e) => setNotifPrefs({ ...notifPrefs, deadline_hours: Number(e.target.value) })} className="w-20 bg-surface text-ink border border-line rounded px-2 py-1 text-sm text-right" />
                         </div>
-                        <button onClick={saveNotifPrefs} disabled={saving} className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50">
+                        <button onClick={saveNotifPrefs} disabled={saving} className="w-full bg-brand text-brand-fg py-2 rounded-lg text-sm font-medium hover:bg-brand-hover transition disabled:opacity-50">
                             {saving ? "Saving..." : "Save Preferences"}
                         </button>
                     </div>
@@ -262,33 +265,33 @@ function SettingsPage() {
                 {activeTab === "AI" && (
                     <div className="space-y-6">
                         {/* Tier badge */}
-                        <div className="bg-white rounded-lg shadow p-6">
+                        <div className="card p-6">
                             <div className="flex items-center justify-between mb-1">
-                                <h3 className="font-semibold text-gray-800">AI Plan</h3>
+                                <h3 className="font-semibold text-ink">AI Plan</h3>
                                 <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
                                     aiSettings?.subscription_tier === "pro"
-                                        ? "bg-purple-100 text-purple-700"
-                                        : "bg-gray-100 text-gray-600"
+                                        ? "bg-brand-subtle text-brand"
+                                        : "bg-subtle text-ink-soft"
                                 }`}>
                                     {aiSettings?.subscription_tier === "pro" ? "Pro" : "Free"}
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-ink-soft">
                                 {aiSettings?.subscription_tier === "pro"
                                     ? "You have access to Gemini 2.5 Flash on the platform account."
                                     : "Using Gemini 2.5 Flash-Lite on our shared free quota."}
                             </p>
 
                             {aiSettings?.subscription_tier !== "pro" && (
-                                <div className="mt-4 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-100">
-                                    <p className="text-sm font-semibold text-purple-800 mb-1">Upgrade to Pro</p>
-                                    <p className="text-xs text-purple-700 mb-3">
+                                <div className="mt-4 p-4 bg-brand-subtle rounded-lg border border-line">
+                                    <p className="text-sm font-semibold text-brand mb-1">Upgrade to Pro</p>
+                                    <p className="text-xs text-ink-soft mb-3">
                                         Get Gemini 2.5 Flash for faster, higher-quality AI summaries and study plans.
                                         No rate limits.
                                     </p>
                                     <button
                                         disabled
-                                        className="text-xs bg-purple-600 text-white px-4 py-1.5 rounded-lg opacity-50 cursor-not-allowed"
+                                        className="text-xs bg-brand text-brand-fg px-4 py-1.5 rounded-lg opacity-50 cursor-not-allowed"
                                     >
                                         Coming soon
                                     </button>
@@ -297,14 +300,14 @@ function SettingsPage() {
                         </div>
 
                         {/* BYOK section */}
-                        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+                        <div className="card p-6 space-y-4">
                             <div>
-                                <h3 className="font-semibold text-gray-800 mb-1">Use Your Own Google AI Key</h3>
-                                <p className="text-sm text-gray-500">
+                                <h3 className="font-semibold text-ink mb-1">Use Your Own Google AI Key</h3>
+                                <p className="text-sm text-ink-soft">
                                     Add your own{" "}
-                                    <span className="font-mono text-xs bg-gray-100 px-1 rounded">AIza...</span> key
+                                    <span className="font-mono text-xs bg-subtle px-1 rounded">AIza...</span> key
                                     from{" "}
-                                    <span className="text-blue-600 underline cursor-not-allowed" title="aistudio.google.com/apikey">
+                                    <span className="text-brand underline cursor-not-allowed" title="aistudio.google.com/apikey">
                                         Google AI Studio
                                     </span>
                                     {" "}to bypass platform limits and pick your own model.
@@ -313,18 +316,18 @@ function SettingsPage() {
                             </div>
 
                             {aiMessage && (
-                                <div className={`p-3 rounded text-sm ${aiMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                                <div className={`p-3 rounded-lg text-sm ${msgCls(aiMessage.type)}`}>
                                     {aiMessage.text}
                                 </div>
                             )}
 
                             {aiSettings?.has_byok_key && (
-                                <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                                    <span className="text-sm text-green-700 font-medium">API key saved</span>
+                                <div className="flex items-center justify-between p-3 bg-success-subtle rounded-lg">
+                                    <span className="text-sm text-success font-medium">API key saved</span>
                                     <button
                                         onClick={clearBYOKKey}
                                         disabled={aiSaving}
-                                        className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                                        className="text-xs text-danger hover:underline disabled:opacity-50"
                                     >
                                         Remove key
                                     </button>
@@ -332,7 +335,7 @@ function SettingsPage() {
                             )}
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-ink-soft mb-1">
                                     {aiSettings?.has_byok_key ? "Replace API key" : "Google AI API key"}
                                 </label>
                                 <div className="flex gap-2">
@@ -341,12 +344,12 @@ function SettingsPage() {
                                         placeholder="AIza..."
                                         value={byokKey}
                                         onChange={(e) => setByokKey(e.target.value)}
-                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className={`${INPUT} flex-1 font-mono`}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowKey((v) => !v)}
-                                        className="text-xs text-gray-500 border border-gray-300 rounded-lg px-3 hover:bg-gray-50"
+                                        className="text-xs text-ink-soft border border-line rounded-lg px-3 hover:bg-subtle"
                                     >
                                         {showKey ? "Hide" : "Show"}
                                     </button>
@@ -354,11 +357,11 @@ function SettingsPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Preferred model</label>
+                                <label className="block text-sm font-medium text-ink-soft mb-1">Preferred model</label>
                                 <select
                                     value={selectedModel}
                                     onChange={(e) => setSelectedModel(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className={INPUT}
                                 >
                                     {(aiSettings?.allowed_models || []).map((m) => (
                                         <option key={m} value={m}>
@@ -366,7 +369,7 @@ function SettingsPage() {
                                         </option>
                                     ))}
                                 </select>
-                                <p className="text-xs text-gray-400 mt-1">
+                                <p className="text-xs text-ink-faint mt-1">
                                     Model selection only takes effect when using your own API key.
                                 </p>
                             </div>
@@ -374,7 +377,7 @@ function SettingsPage() {
                             <button
                                 onClick={saveAISettings}
                                 disabled={aiSaving || (!byokKey && selectedModel === aiSettings?.ai_model)}
-                                className="w-full bg-blue-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                                className="w-full bg-brand text-brand-fg py-2 rounded-lg text-sm font-medium hover:bg-brand-hover transition disabled:opacity-50"
                             >
                                 {aiSaving ? "Saving..." : "Save AI Settings"}
                             </button>
@@ -384,15 +387,15 @@ function SettingsPage() {
 
                 {/* Schedule tab */}
                 {activeTab === "Schedule" && (
-                    <div className="bg-white rounded-lg shadow p-6 space-y-6">
+                    <div className="card p-6 space-y-6">
                         <div>
-                            <h3 className="font-semibold text-gray-800 mb-4">Add recurring class</h3>
+                            <h3 className="font-semibold text-ink mb-4">Add recurring class</h3>
                             <div className="grid grid-cols-2 gap-3 mb-3">
                                 <div className="col-span-2">
-                                    <label className="text-xs text-gray-500 mb-1 block">Course</label>
+                                    <label className="text-xs text-ink-soft mb-1 block">Course</label>
                                     <select value={schedForm.course_id}
                                             onChange={(e) => setSchedForm((f) => ({ ...f, course_id: e.target.value }))}
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none">
+                                            className={INPUT}>
                                         <option value="">Select a course…</option>
                                         {courses.map((c) => (
                                             <option key={c.course_id} value={c.course_id}>
@@ -402,62 +405,62 @@ function SettingsPage() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Day</label>
+                                    <label className="text-xs text-ink-soft mb-1 block">Day</label>
                                     <select value={schedForm.day_of_week}
                                             onChange={(e) => setSchedForm((f) => ({ ...f, day_of_week: e.target.value }))}
-                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none">
+                                            className={INPUT}>
                                         {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Location</label>
+                                    <label className="text-xs text-ink-soft mb-1 block">Location</label>
                                     <input type="text" placeholder="e.g. Room 204"
                                            value={schedForm.location}
                                            onChange={(e) => setSchedForm((f) => ({ ...f, location: e.target.value }))}
-                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                           className={INPUT} />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Start time</label>
+                                    <label className="text-xs text-ink-soft mb-1 block">Start time</label>
                                     <input type="time" value={schedForm.start_time}
                                            onChange={(e) => setSchedForm((f) => ({ ...f, start_time: e.target.value }))}
-                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                           className={INPUT} />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">End time</label>
+                                    <label className="text-xs text-ink-soft mb-1 block">End time</label>
                                     <input type="time" value={schedForm.end_time}
                                            onChange={(e) => setSchedForm((f) => ({ ...f, end_time: e.target.value }))}
-                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                           className={INPUT} />
                                 </div>
                             </div>
                             {schedMsg && (
-                                <p className={`text-xs mb-2 ${schedMsg.type === "error" ? "text-red-500" : "text-green-600"}`}>{schedMsg.text}</p>
+                                <p className={`text-xs mb-2 ${schedMsg.type === "error" ? "text-danger" : "text-success"}`}>{schedMsg.text}</p>
                             )}
                             <button onClick={addSession}
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                                    className="bg-brand text-brand-fg px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-hover transition">
                                 Add class
                             </button>
                         </div>
 
                         <div>
-                            <h3 className="font-semibold text-gray-800 mb-3">Weekly schedule</h3>
+                            <h3 className="font-semibold text-ink mb-3">Weekly schedule</h3>
                             {sessions.length === 0 ? (
-                                <p className="text-sm text-gray-400">No classes added yet.</p>
+                                <p className="text-sm text-ink-faint">No classes added yet.</p>
                             ) : (
                                 <div className="space-y-2">
                                     {sessions.map((s) => (
                                         <div key={s.session_id}
-                                             className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                             className="flex items-center gap-3 p-3 rounded-lg border border-line hover:bg-subtle transition-colors">
                                             <div className="w-1 h-10 rounded-full flex-shrink-0"
                                                  style={{ backgroundColor: s.color || "#6B7280" }} />
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-800">{s.course_name}</p>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="text-sm font-medium text-ink">{s.course_name}</p>
+                                                <p className="text-xs text-ink-faint">
                                                     {DAY_NAMES[s.day_of_week]} · {s.start_time.slice(0,5)}–{s.end_time.slice(0,5)}
                                                     {s.location ? ` · ${s.location}` : ""}
                                                 </p>
                                             </div>
                                             <button onClick={() => deleteSession(s.session_id)}
-                                                    className="text-gray-300 hover:text-red-400 transition text-sm">✕</button>
+                                                    className="text-ink-faint hover:text-danger transition text-sm">✕</button>
                                         </div>
                                     ))}
                                 </div>
@@ -468,20 +471,20 @@ function SettingsPage() {
 
                 {/* Connected Services tab */}
                 {activeTab === "Connected Services" && (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="font-semibold text-gray-800 mb-4">Google Calendar</h3>
-                        <p className="text-sm text-gray-500 mb-4">
+                    <div className="card p-6">
+                        <h3 className="font-semibold text-ink mb-4">Google Calendar</h3>
+                        <p className="text-sm text-ink-soft mb-4">
                             Connect your Google Calendar to automatically sync assignment due dates.
                             Classerize will create and update events so your calendar stays current.
                         </p>
                         {accounts.some((a) => a.lms_name === "GoogleCalendar") ? (
                             <div className="flex items-center gap-3">
-                                <span className="text-sm text-green-700 font-medium bg-green-50 border border-green-200 rounded-lg px-3 py-1.5">
+                                <span className="text-sm text-success font-medium bg-success-subtle rounded-lg px-3 py-1.5">
                                     Connected
                                 </span>
                                 <a
                                     href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/google/calendar`}
-                                    className="text-xs text-blue-600 hover:underline"
+                                    className="text-xs text-brand hover:underline"
                                 >
                                     Reconnect
                                 </a>
@@ -489,7 +492,7 @@ function SettingsPage() {
                         ) : (
                             <a
                                 href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/google/calendar`}
-                                className="inline-flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                                className="inline-flex items-center gap-2 bg-surface border border-line rounded-lg px-4 py-2 text-sm text-ink-soft hover:bg-subtle transition"
                             >
                                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -500,8 +503,8 @@ function SettingsPage() {
                                 Connect Google Calendar
                             </a>
                         )}
-                        <p className="text-xs text-gray-400 mt-3">
-                            Syncs every 30 minutes. Requires Google OAuth and <code className="bg-gray-100 px-1 rounded">GOOGLE_CLIENT_ID</code> to be configured.
+                        <p className="text-xs text-ink-faint mt-3">
+                            Syncs every 30 minutes. Requires Google OAuth and <code className="bg-subtle px-1 rounded">GOOGLE_CLIENT_ID</code> to be configured.
                         </p>
                     </div>
                 )}

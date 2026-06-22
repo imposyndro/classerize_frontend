@@ -9,10 +9,10 @@ import apiClient from "@/lib/apiClient";
 
 // Anki-style recall buttons → SM-2 quality (0–5)
 const RATINGS = [
-    { label: "Again", quality: 1, color: "#EF4444", hint: "Forgot" },
-    { label: "Hard",  quality: 3, color: "#F59E0B", hint: "Tough" },
-    { label: "Good",  quality: 4, color: "#3B82F6", hint: "Recalled" },
-    { label: "Easy",  quality: 5, color: "#10B981", hint: "Trivial" },
+    { label: "Again", quality: 1, color: "var(--danger)",  hint: "Forgot" },
+    { label: "Hard",  quality: 3, color: "var(--warning)", hint: "Tough" },
+    { label: "Good",  quality: 4, color: "var(--brand)",   hint: "Recalled" },
+    { label: "Easy",  quality: 5, color: "var(--success)", hint: "Trivial" },
 ];
 
 function ReviewInner() {
@@ -58,50 +58,50 @@ function ReviewInner() {
     }, [flipped, current]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (loading) {
-        return <DashboardLayout><div className="max-w-2xl mx-auto py-16 text-center text-gray-400">Loading cards…</div></DashboardLayout>;
+        return <DashboardLayout><div className="max-w-2xl mx-auto py-16 text-center text-ink-faint">Loading cards…</div></DashboardLayout>;
     }
 
     const done = !current;
 
     return (
         <DashboardLayout>
-            <div className="max-w-2xl mx-auto py-8 px-4">
+            <div className="max-w-2xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <Link href="/flashcards" className="text-sm text-blue-600 hover:underline">← Back to decks</Link>
-                    {!done && <span className="text-sm text-gray-400">{idx + 1} / {queue.length}</span>}
+                    <Link href="/flashcards" className="text-sm text-brand hover:underline">← Back to decks</Link>
+                    {!done && <span className="text-sm text-ink-faint tabular-nums">{idx + 1} / {queue.length}</span>}
                 </div>
 
                 {done ? (
                     <div className="text-center py-16">
                         <div className="text-5xl mb-4">{reviewed > 0 ? "🎉" : "✅"}</div>
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-2xl font-bold text-ink mb-2">
                             {reviewed > 0 ? "Session complete!" : "Nothing due right now"}
                         </h1>
-                        <p className="text-gray-500 mb-8">
+                        <p className="text-ink-soft mb-8">
                             {reviewed > 0 ? `You reviewed ${reviewed} card${reviewed === 1 ? "" : "s"}.` : "Come back later, or study ahead from a deck."}
                         </p>
-                        <Link href="/flashcards" className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-700">
+                        <Link href="/flashcards" className="bg-brand text-brand-fg px-5 py-2.5 rounded-tile font-semibold hover:bg-brand-hover">
                             Back to decks
                         </Link>
                     </div>
                 ) : (
                     <>
                         {/* Progress bar */}
-                        <div className="h-1 bg-gray-100 rounded-full mb-6 overflow-hidden">
-                            <div className="h-full bg-blue-600 transition-all" style={{ width: `${(idx / queue.length) * 100}%` }} />
+                        <div className="h-1 bg-subtle rounded-full mb-6 overflow-hidden">
+                            <div className="h-full bg-brand transition-all" style={{ width: `${(idx / queue.length) * 100}%` }} />
                         </div>
 
                         {/* Card */}
                         <div
                             onClick={() => setFlipped((f) => !f)}
-                            className="bg-white rounded-2xl shadow-lg border border-gray-100 min-h-[16rem] flex flex-col items-center justify-center p-8 cursor-pointer select-none text-center"
+                            className="bg-surface rounded-tile shadow-lg border border-line min-h-[16rem] flex flex-col items-center justify-center p-8 cursor-pointer select-none text-center"
                         >
-                            {current.deck_title && <p className="text-xs text-gray-300 mb-3 uppercase tracking-wide">{current.deck_title}</p>}
-                            <p className="text-xl font-medium text-gray-800 whitespace-pre-wrap">{current.front}</p>
+                            {current.deck_title && <p className="text-xs text-ink-faint mb-3 uppercase tracking-wide">{current.deck_title}</p>}
+                            <p className="text-xl font-medium text-ink whitespace-pre-wrap">{current.front}</p>
                             {flipped && (
                                 <>
-                                    <div className="w-full border-t border-gray-100 my-5" />
-                                    <p className="text-lg text-gray-600 whitespace-pre-wrap">{current.back}</p>
+                                    <div className="w-full border-t border-line my-5" />
+                                    <p className="text-lg text-ink-soft whitespace-pre-wrap">{current.back}</p>
                                 </>
                             )}
                         </div>
@@ -109,14 +109,14 @@ function ReviewInner() {
                         {/* Controls */}
                         {!flipped ? (
                             <button onClick={() => setFlipped(true)}
-                                    className="w-full mt-6 bg-gray-800 text-white py-3 rounded-xl font-semibold hover:bg-gray-900 transition">
+                                    className="w-full mt-6 bg-ink text-surface py-3 rounded-tile font-semibold hover:opacity-90 transition">
                                 Show answer <span className="opacity-50 text-sm">(space)</span>
                             </button>
                         ) : (
                             <div className="grid grid-cols-4 gap-2 mt-6">
                                 {RATINGS.map((r, i) => (
                                     <button key={r.label} onClick={() => rate(r.quality)}
-                                            className="py-3 rounded-xl text-white font-semibold transition hover:opacity-90 flex flex-col items-center"
+                                            className="py-3 rounded-tile text-white font-semibold transition hover:opacity-90 flex flex-col items-center"
                                             style={{ backgroundColor: r.color }}>
                                         <span>{r.label}</span>
                                         <span className="text-xs opacity-70 font-normal">{i + 1}</span>
@@ -133,7 +133,7 @@ function ReviewInner() {
 
 function ReviewPage() {
     return (
-        <Suspense fallback={<DashboardLayout><div className="py-16 text-center text-gray-400">Loading…</div></DashboardLayout>}>
+        <Suspense fallback={<DashboardLayout><div className="py-16 text-center text-ink-faint">Loading…</div></DashboardLayout>}>
             <ReviewInner />
         </Suspense>
     );

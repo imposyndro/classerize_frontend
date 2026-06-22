@@ -32,28 +32,28 @@ function NotificationsPage() {
     return (
         <DashboardLayout>
             <div className="max-w-2xl">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Notifications</h1>
+                <h1 className="text-2xl font-bold text-ink mb-6">Notifications</h1>
                 {loading ? (
-                    <p className="text-gray-400">Loading...</p>
+                    <p className="text-ink-faint">Loading...</p>
                 ) : notifications.length === 0 ? (
-                    <p className="text-gray-500 text-center py-16">No notifications yet.</p>
+                    <p className="text-ink-faint text-center py-16">No notifications yet.</p>
                 ) : (
                     <div className="space-y-2">
                         {notifications.map((n) => (
                             <div
                                 key={n.notification_id}
-                                className={`bg-white rounded-lg shadow p-4 flex justify-between items-start gap-4 ${!n.read_at ? "border-l-4 border-blue-500" : ""}`}
+                                className={`bg-surface rounded-card shadow-soft p-4 flex justify-between items-start gap-4 ${!n.read_at ? "border-l-4 border-brand" : ""}`}
                             >
                                 <div>
-                                    <p className={`text-sm ${!n.read_at ? "font-semibold text-gray-800" : "text-gray-600"}`}>
+                                    <p className={`text-sm ${!n.read_at ? "font-semibold text-ink" : "text-ink-soft"}`}>
                                         {n.message || n.notification_type}
                                     </p>
-                                    <p className="text-xs text-gray-400 mt-1">
+                                    <p className="text-xs text-ink-faint mt-1">
                                         {new Date(n.notification_time).toLocaleString()}
                                     </p>
                                 </div>
                                 {!n.read_at && (
-                                    <button onClick={() => markRead(n.notification_id)} className="text-xs text-blue-500 hover:underline shrink-0">
+                                    <button onClick={() => markRead(n.notification_id)} className="text-xs text-brand hover:underline shrink-0">
                                         Mark read
                                     </button>
                                 )}

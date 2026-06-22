@@ -4,12 +4,12 @@ import { useState, useCallback } from "react";
 import apiClient from "@/lib/apiClient";
 
 const STATUS_STYLES = {
-    pending:   "bg-yellow-100 text-yellow-700",
-    submitted: "bg-blue-100 text-blue-700",
-    completed: "bg-green-100 text-green-700",
-    graded:    "bg-purple-100 text-purple-700",
-    overdue:   "bg-red-100 text-red-700",
-    excused:   "bg-gray-100 text-gray-500",
+    pending:   "bg-warning-subtle text-warning",
+    submitted: "bg-brand-subtle text-brand",
+    completed: "bg-success-subtle text-success",
+    graded:    "bg-brand-subtle text-brand",
+    overdue:   "bg-danger-subtle text-danger",
+    excused:   "bg-subtle text-ink-faint",
 };
 
 function startByLabel(dueDate, pointsPossible) {
@@ -52,16 +52,16 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-4 flex flex-col gap-2 border-l-4"
+        <div className="card p-4 flex flex-col gap-2 border-l-4 transition-transform duration-base hover:-translate-y-0.5"
              style={{ borderLeftColor: courseColor }}>
 
             {/* Header */}
             <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-800 leading-tight">{assignment.assignment_name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5 truncate">
+                    <p className="font-semibold text-ink leading-tight">{assignment.assignment_name}</p>
+                    <p className="text-xs text-ink-soft mt-0.5 truncate">
                         {assignment.course_name}
-                        {assignment.course_code && <span className="ml-1 text-gray-400">({assignment.course_code})</span>}
+                        {assignment.course_code && <span className="ml-1 text-ink-faint">({assignment.course_code})</span>}
                     </p>
                 </div>
                 <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLES[assignment.status] || STATUS_STYLES.pending}`}>
@@ -70,8 +70,8 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
             </div>
 
             {/* Meta row */}
-            <div className="flex items-center flex-wrap gap-3 text-xs text-gray-500">
-                <span className={isPastDue && !isGraded ? "text-red-500 font-medium" : ""}>
+            <div className="flex items-center flex-wrap gap-3 text-xs text-ink-soft">
+                <span className={isPastDue && !isGraded ? "text-danger font-medium" : ""}>
                     {dueLabel()}
                 </span>
                 {assignment.points_possible && (
@@ -80,10 +80,10 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                 {!isGraded && assignment.status === "pending" && (() => {
                     const hint = startByLabel(assignment.due_date, assignment.points_possible);
                     return hint ? (
-                        <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{hint}</span>
+                        <span className="bg-brand-subtle text-brand px-1.5 py-0.5 rounded font-medium">{hint}</span>
                     ) : null;
                 })()}
-                <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
+                <span className="bg-subtle text-ink-faint px-1.5 py-0.5 rounded">
                     {assignment.lms_name}
                 </span>
             </div>
@@ -92,13 +92,13 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
             {!isGraded && (
                 <div className="mt-1">
                     <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                        <div className="flex-1 bg-subtle rounded-full h-1.5 overflow-hidden">
                             <div
                                 className="h-full rounded-full transition-all"
                                 style={{ width: `${localProgress}%`, backgroundColor: courseColor }}
                             />
                         </div>
-                        <span className="text-xs text-gray-400 w-8 text-right">{localProgress}%</span>
+                        <span className="text-xs text-ink-faint w-8 text-right tabular-nums">{localProgress}%</span>
                     </div>
                     <input
                         type="range" min="0" max="100" step="5"
@@ -106,7 +106,7 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                         onChange={(e) => setLocalProgress(Number(e.target.value))}
                         onMouseUp={(e) => handleProgressChange(Number(e.target.value))}
                         onTouchEnd={(e) => handleProgressChange(Number(e.target.value))}
-                        className="w-full h-1 mt-1 cursor-pointer accent-blue-600 opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity"
+                        className="w-full h-1 mt-1 cursor-pointer accent-brand opacity-0 hover:opacity-100 focus:opacity-100 transition-opacity"
                         title="Drag to update progress"
                     />
                 </div>
@@ -117,12 +117,12 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                 <div>
                     <button
                         onClick={() => setShowSummary(!showSummary)}
-                        className="text-xs text-blue-500 hover:underline"
+                        className="text-xs text-brand hover:underline"
                     >
                         {showSummary ? "Hide AI summary" : "Show AI summary"}
                     </button>
                     {showSummary && (
-                        <p className="mt-1 text-xs text-gray-600 bg-blue-50 rounded p-2">
+                        <p className="mt-1 text-xs text-ink-soft bg-brand-subtle rounded-lg p-2">
                             {assignment.ai_summary}
                         </p>
                     )}
@@ -135,7 +135,7 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                     {assignment.status !== "completed" && (
                         <button
                             onClick={() => onMarkStatus(assignment.assignment_id, "completed")}
-                            className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition"
+                            className="text-xs bg-success text-white px-3 py-1 rounded-lg hover:opacity-90 transition"
                         >
                             Mark Complete
                         </button>
@@ -143,7 +143,7 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                     {assignment.status !== "submitted" && assignment.status !== "completed" && (
                         <button
                             onClick={() => onMarkStatus(assignment.assignment_id, "submitted")}
-                            className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition"
+                            className="text-xs bg-brand-subtle text-brand px-3 py-1 rounded-lg hover:brightness-95 transition"
                         >
                             Mark Submitted
                         </button>
@@ -151,7 +151,7 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                     {assignment.status !== "pending" && (
                         <button
                             onClick={() => onMarkStatus(assignment.assignment_id, "pending")}
-                            className="text-xs text-gray-400 hover:text-gray-600"
+                            className="text-xs text-ink-faint hover:text-ink-soft"
                         >
                             Reset
                         </button>

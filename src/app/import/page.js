@@ -65,62 +65,64 @@ function ImportPage() {
 
     const reset = () => { setFile(null); setParsed(null); setRows([]); setDone(null); setError(""); if (fileRef.current) fileRef.current.value = ""; };
 
+    const fieldCls = "bg-surface text-ink border border-line rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-brand";
+
     return (
         <DashboardLayout>
-            <div className="max-w-3xl mx-auto py-8 px-4">
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">Import Syllabus</h1>
-                <p className="text-sm text-gray-500 mb-6">
+            <div className="max-w-3xl mx-auto">
+                <h1 className="text-2xl font-bold text-ink mb-1">Import Syllabus</h1>
+                <p className="text-sm text-ink-soft mb-6">
                     Upload a syllabus PDF and let AI extract the assignments, exams, and due dates. Review them, then import into a course.
                 </p>
 
-                {error && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">{error}</div>}
+                {error && <div className="mb-4 p-3 bg-danger-subtle text-danger rounded-lg text-sm">{error}</div>}
 
                 {done ? (
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+                    <div className="bg-success-subtle rounded-tile p-6 text-center">
                         <div className="text-4xl mb-3">📚</div>
-                        <p className="text-lg font-semibold text-gray-800 mb-1">Imported {done.created} assignment{done.created === 1 ? "" : "s"}!</p>
-                        <p className="text-sm text-gray-500 mb-4">They're now on your assignments list and calendar.</p>
+                        <p className="text-lg font-semibold text-ink mb-1">Imported {done.created} assignment{done.created === 1 ? "" : "s"}!</p>
+                        <p className="text-sm text-ink-soft mb-4">They're now on your assignments list and calendar.</p>
                         <div className="flex gap-3 justify-center">
-                            <Link href="/assignments" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">View assignments</Link>
-                            <button onClick={reset} className="border border-gray-300 px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Import another</button>
+                            <Link href="/assignments" className="bg-brand text-brand-fg px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-hover">View assignments</Link>
+                            <button onClick={reset} className="border border-line px-4 py-2 rounded-lg text-sm text-ink-soft hover:bg-subtle">Import another</button>
                         </div>
                     </div>
                 ) : (
                     <>
                         {/* Upload */}
-                        <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6">
+                        <div className="card-tile p-5 mb-6">
                             <input ref={fileRef} type="file" accept="application/pdf"
                                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                   className="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-medium hover:file:bg-blue-100" />
+                                   className="block w-full text-sm text-ink-soft file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-brand-subtle file:text-brand file:font-medium hover:file:brightness-95" />
                             <button onClick={parse} disabled={!file || parsing}
-                                    className="mt-4 bg-indigo-600 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50">
+                                    className="mt-4 bg-brand text-brand-fg px-5 py-2 rounded-lg text-sm font-medium hover:bg-brand-hover disabled:opacity-50">
                                 {parsing ? "Reading syllabus…" : "✨ Extract assignments"}
                             </button>
-                            {parsing && <p className="text-xs text-gray-400 mt-2">This can take a few seconds while the AI reads your PDF.</p>}
+                            {parsing && <p className="text-xs text-ink-faint mt-2">This can take a few seconds while the AI reads your PDF.</p>}
                         </div>
 
                         {/* Review */}
                         {parsed && (
-                            <div className="bg-white rounded-xl border border-gray-100 p-5">
-                                <div className="mb-4 text-sm text-gray-600">
+                            <div className="card-tile p-5">
+                                <div className="mb-4 text-sm text-ink-soft">
                                     <span className="font-medium">Detected:</span>{" "}
                                     {parsed.course_name || "Unknown course"}
                                     {parsed.course_code && ` (${parsed.course_code})`}
                                     {parsed.instructor && ` · ${parsed.instructor}`}
                                 </div>
 
-                                <label className="block text-xs font-medium text-gray-600 mb-1">Import into course *</label>
+                                <label className="block text-xs font-medium text-ink-soft mb-1">Import into course *</label>
                                 <select value={courseId} onChange={(e) => setCourseId(e.target.value)}
-                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                                        className="w-full bg-surface text-ink border border-line rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-1 focus:ring-brand">
                                     <option value="">Select a course…</option>
                                     {courses.map((c) => <option key={c.course_id} value={c.course_id}>{c.course_name}</option>)}
                                 </select>
 
                                 {rows.length === 0 ? (
-                                    <p className="text-sm text-gray-400 py-4 text-center">No assignments were detected in this PDF.</p>
+                                    <p className="text-sm text-ink-faint py-4 text-center">No assignments were detected in this PDF.</p>
                                 ) : (
                                     <div className="space-y-2 mb-4">
-                                        <div className="flex items-center gap-2 text-xs text-gray-400 font-medium px-1">
+                                        <div className="flex items-center gap-2 text-xs text-ink-faint font-medium px-1">
                                             <span className="w-6" />
                                             <span className="flex-1">Name</span>
                                             <span className="w-32">Due date</span>
@@ -130,20 +132,20 @@ function ImportPage() {
                                             <div key={i} className={`flex items-center gap-2 ${r._include ? "" : "opacity-40"}`}>
                                                 <input type="checkbox" checked={r._include}
                                                        onChange={(e) => updateRow(i, { _include: e.target.checked })}
-                                                       className="w-4 h-4 accent-blue-600" />
+                                                       className="w-4 h-4 accent-brand" />
                                                 <input value={r.name} onChange={(e) => updateRow(i, { name: e.target.value })}
-                                                       className="flex-1 border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                                                       className={`flex-1 ${fieldCls}`} />
                                                 <input type="date" value={r.due_date || ""} onChange={(e) => updateRow(i, { due_date: e.target.value })}
-                                                       className="w-32 border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                                                       className={`w-32 ${fieldCls}`} />
                                                 <input type="number" value={r.points ?? ""} onChange={(e) => updateRow(i, { points: e.target.value === "" ? null : Number(e.target.value) })}
-                                                       className="w-16 border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400" />
+                                                       className={`w-16 ${fieldCls}`} />
                                             </div>
                                         ))}
                                     </div>
                                 )}
 
                                 <button onClick={confirm} disabled={confirming || rows.length === 0}
-                                        className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50">
+                                        className="w-full bg-brand text-brand-fg py-2.5 rounded-lg font-semibold hover:bg-brand-hover disabled:opacity-50">
                                     {confirming ? "Importing…" : `Import ${rows.filter((r) => r._include).length} assignment${rows.filter((r) => r._include).length === 1 ? "" : "s"}`}
                                 </button>
                             </div>

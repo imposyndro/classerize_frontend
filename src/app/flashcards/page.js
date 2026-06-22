@@ -38,16 +38,16 @@ function FlashcardsPage() {
 
     return (
         <DashboardLayout>
-            <div className="max-w-5xl mx-auto py-8 px-4">
+            <div className="max-w-5xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Flashcards</h1>
+                    <h1 className="text-2xl font-bold text-ink">Flashcards</h1>
                     <div className="flex gap-2">
                         <button onClick={() => setModal("manual")}
-                                className="text-sm px-3 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                                className="text-sm px-3 py-2 rounded-lg border border-line text-ink-soft hover:bg-subtle transition">
                             + New deck
                         </button>
                         <button onClick={() => setModal("ai")}
-                                className="text-sm px-3 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700">
+                                className="text-sm px-3 py-2 rounded-lg bg-brand text-brand-fg font-medium hover:bg-brand-hover transition">
                             ✨ Generate with AI
                         </button>
                     </div>
@@ -55,15 +55,15 @@ function FlashcardsPage() {
 
                 {/* Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    <StatCard label="Total cards"     value={stats.total_cards} color="#6366F1" />
-                    <StatCard label="Due today"        value={stats.due_today}   color="#EF4444" />
-                    <StatCard label="Reviewed today"   value={stats.reviewed_today} color="#10B981" />
+                    <StatCard label="Total cards"     value={stats.total_cards}    accent="text-brand" />
+                    <StatCard label="Due today"        value={stats.due_today}      accent="text-danger" />
+                    <StatCard label="Reviewed today"   value={stats.reviewed_today} accent="text-success" />
                 </div>
 
                 {stats.due_today > 0 && (
                     <button
                         onClick={() => router.push("/flashcards/review")}
-                        className="w-full mb-6 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
+                        className="w-full mb-6 bg-brand text-brand-fg py-3 rounded-tile font-semibold hover:bg-brand-hover transition"
                     >
                         Review {stats.due_today} due card{stats.due_today === 1 ? "" : "s"} →
                     </button>
@@ -72,42 +72,42 @@ function FlashcardsPage() {
                 {/* Deck grid */}
                 {loading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[1, 2, 3].map((i) => <div key={i} className="h-32 bg-gray-100 rounded-xl animate-pulse" />)}
+                        {[1, 2, 3].map((i) => <div key={i} className="skeleton h-32 rounded-tile" />)}
                     </div>
                 ) : decks.length === 0 ? (
-                    <div className="text-center py-16 text-gray-400">
+                    <div className="text-center py-16 text-ink-faint">
                         <p className="text-lg mb-1">No flashcard decks yet.</p>
                         <p className="text-sm">Generate one with AI or create a deck manually to get started.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {decks.map((d) => (
-                            <div key={d.deck_id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-col"
-                                 style={{ borderTopColor: d.color || "#6366F1", borderTopWidth: 3 }}>
+                            <div key={d.deck_id} className="card-tile p-4 flex flex-col transition-transform duration-base hover:-translate-y-0.5"
+                                 style={{ borderTopColor: d.color || "var(--brand)", borderTopWidth: 3 }}>
                                 <div className="flex items-start justify-between gap-2">
                                     <Link href={`/flashcards/${d.deck_id}`} className="flex-1 min-w-0">
-                                        <p className="font-semibold text-gray-800 truncate hover:text-blue-600">{d.title}</p>
-                                        {d.course_name && <p className="text-xs text-gray-400 truncate">{d.course_name}</p>}
+                                        <p className="font-semibold text-ink truncate hover:text-brand transition-colors">{d.title}</p>
+                                        {d.course_name && <p className="text-xs text-ink-faint truncate">{d.course_name}</p>}
                                     </Link>
-                                    {d.source === "ai" && <span className="text-xs bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded shrink-0">AI</span>}
+                                    {d.source === "ai" && <span className="text-xs bg-brand-subtle text-brand px-1.5 py-0.5 rounded shrink-0">AI</span>}
                                 </div>
-                                <div className="flex items-center gap-3 mt-3 text-sm text-gray-500">
+                                <div className="flex items-center gap-3 mt-3 text-sm text-ink-soft">
                                     <span>{d.card_count} card{d.card_count === 1 ? "" : "s"}</span>
-                                    {d.due_count > 0 && <span className="text-red-500 font-medium">{d.due_count} due</span>}
+                                    {d.due_count > 0 && <span className="text-danger font-medium">{d.due_count} due</span>}
                                 </div>
                                 <div className="flex gap-2 mt-4">
                                     <Link href={`/flashcards/review?deck_id=${d.deck_id}`}
                                           className={`flex-1 text-center text-sm py-1.5 rounded-lg font-medium transition ${
-                                              d.due_count > 0 ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-400 pointer-events-none"
+                                              d.due_count > 0 ? "bg-brand text-brand-fg hover:bg-brand-hover" : "bg-subtle text-ink-faint pointer-events-none"
                                           }`}>
                                         Study
                                     </Link>
                                     <Link href={`/flashcards/${d.deck_id}`}
-                                          className="text-sm py-1.5 px-3 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
+                                          className="text-sm py-1.5 px-3 rounded-lg border border-line text-ink-soft hover:bg-subtle transition">
                                         Manage
                                     </Link>
                                     <button onClick={() => deleteDeck(d.deck_id)}
-                                            className="text-sm py-1.5 px-2 rounded-lg text-gray-300 hover:text-red-500" title="Delete deck">
+                                            className="text-sm py-1.5 px-2 rounded-lg text-ink-faint hover:text-danger transition" title="Delete deck">
                                         🗑
                                     </button>
                                 </div>
@@ -123,11 +123,11 @@ function FlashcardsPage() {
     );
 }
 
-function StatCard({ label, value, color }) {
+function StatCard({ label, value, accent }) {
     return (
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-            <p className="text-3xl font-bold" style={{ color }}>{value}</p>
-            <p className="text-xs text-gray-400 mt-1 uppercase tracking-wide">{label}</p>
+        <div className="card p-4">
+            <p className={`text-3xl font-bold tabular-nums ${accent}`}>{value}</p>
+            <p className="text-xs text-ink-faint mt-1 uppercase tracking-wide">{label}</p>
         </div>
     );
 }
@@ -154,7 +154,7 @@ function GenerateModal({ courses, onClose, onDone }) {
 
     return (
         <Modal title="Generate flashcards with AI" onClose={onClose}>
-            {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+            {error && <p className="text-sm text-danger mb-3">{error}</p>}
             <Field label="Topic *">
                 <input className="modal-input" value={form.topic} placeholder="e.g. Krebs cycle"
                        onChange={(e) => setForm({ ...form, topic: e.target.value })} />
@@ -181,7 +181,7 @@ function GenerateModal({ courses, onClose, onDone }) {
                           onChange={(e) => setForm({ ...form, source_text: e.target.value })} />
             </Field>
             <button onClick={submit} disabled={busy}
-                    className="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-50">
+                    className="w-full bg-brand text-brand-fg py-2 rounded-lg font-medium hover:bg-brand-hover disabled:opacity-50">
                 {busy ? "Generating…" : "Generate"}
             </button>
         </Modal>
@@ -219,7 +219,7 @@ function ManualModal({ courses, onClose, onDone }) {
                 </select>
             </Field>
             <button onClick={submit} disabled={busy}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50">
+                    className="w-full bg-brand text-brand-fg py-2 rounded-lg font-medium hover:bg-brand-hover disabled:opacity-50">
                 {busy ? "Creating…" : "Create deck"}
             </button>
         </Modal>
@@ -228,17 +228,17 @@ function ManualModal({ courses, onClose, onDone }) {
 
 function Modal({ title, children, onClose }) {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4 animate-fade-in" onClick={(e) => e.target === e.currentTarget && onClose()}>
+            <div className="bg-surface border border-line rounded-tile shadow-lg w-full max-w-md p-6 animate-pop-in">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
+                    <h2 className="text-lg font-semibold text-ink">{title}</h2>
+                    <button onClick={onClose} className="text-ink-faint hover:text-ink text-xl">×</button>
                 </div>
                 {children}
             </div>
             <style jsx global>{`
-                .modal-input { width:100%; border:1px solid #d1d5db; border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; outline:none; }
-                .modal-input:focus { border-color:#6366f1; box-shadow:0 0 0 1px #6366f1; }
+                .modal-input { width:100%; background:var(--bg-surface); color:var(--text-primary); border:1px solid var(--border); border-radius:0.5rem; padding:0.5rem 0.75rem; font-size:0.875rem; outline:none; }
+                .modal-input:focus { border-color:var(--brand); box-shadow:0 0 0 1px var(--brand); }
             `}</style>
         </div>
     );
@@ -247,7 +247,7 @@ function Modal({ title, children, onClose }) {
 function Field({ label, children }) {
     return (
         <div className="mb-3 flex-1">
-            <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+            <label className="block text-xs font-medium text-ink-soft mb-1">{label}</label>
             {children}
         </div>
     );

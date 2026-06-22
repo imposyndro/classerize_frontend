@@ -33,26 +33,26 @@ function StudySchedulePage() {
     useEffect(() => { load(); }, []);
 
     const riskColors = {
-        high: 'bg-red-100 border-red-400 text-red-800',
-        medium: 'bg-yellow-100 border-yellow-400 text-yellow-800',
-        low: 'bg-green-100 border-green-400 text-green-800',
+        high: 'bg-danger-subtle border-danger text-danger',
+        medium: 'bg-warning-subtle border-warning text-warning',
+        low: 'bg-success-subtle border-success text-success',
     };
 
     return (
         <DashboardLayout>
-            <div className="max-w-3xl mx-auto py-8 px-4">
-                <h1 className="text-2xl font-bold text-gray-900 mb-6">AI Study Schedule</h1>
+            <div className="max-w-3xl mx-auto">
+                <h1 className="text-2xl font-bold text-ink mb-6">AI Study Schedule</h1>
 
                 {loading && (
                     <div className="space-y-3">
                         {[...Array(4)].map((_, i) => (
-                            <div key={i} className="h-6 bg-gray-200 rounded animate-pulse" />
+                            <div key={i} className="skeleton h-6" />
                         ))}
                     </div>
                 )}
 
                 {error && (
-                    <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+                    <div className="bg-danger-subtle text-danger px-4 py-3 rounded-lg">
                         {error}
                     </div>
                 )}
@@ -61,7 +61,7 @@ function StudySchedulePage() {
                     <>
                         {urgency.length > 0 && (
                             <section className="mb-8">
-                                <h2 className="text-lg font-semibold text-gray-800 mb-3">At-Risk Assignments</h2>
+                                <h2 className="text-lg font-semibold text-ink mb-3">At-Risk Assignments</h2>
                                 <div className="space-y-2">
                                     {urgency.map((item) => (
                                         <div
@@ -77,15 +77,15 @@ function StudySchedulePage() {
                         )}
 
                         <section>
-                            <h2 className="text-lg font-semibold text-gray-800 mb-3">Your Study Plan</h2>
-                            <div className="bg-white border border-gray-200 rounded-xl p-5 whitespace-pre-wrap text-sm text-gray-700 leading-relaxed">
+                            <h2 className="text-lg font-semibold text-ink mb-3">Your Study Plan</h2>
+                            <div className="card p-5 whitespace-pre-wrap text-sm text-ink-soft leading-relaxed">
                                 {schedule || 'No upcoming assignments found. Enjoy your free time!'}
                             </div>
                         </section>
 
                         <button
                             onClick={load}
-                            className="mt-6 text-sm text-blue-600 hover:underline"
+                            className="mt-6 text-sm text-brand hover:underline"
                         >
                             Refresh recommendations
                         </button>
