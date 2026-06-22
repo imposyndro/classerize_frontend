@@ -13,6 +13,8 @@
   --bg-app: #f7f8fa;
   --bg-surface: #ffffff;
   --bg-subtle: #f1f3f5;
+  /* Translucent surface for the glass nav (opacity baked in) */
+  --surface-translucent: rgba(255, 255, 255, 0.72);
 
   /* Text */
   --text-primary: #0f172a;
@@ -63,12 +65,17 @@
   --shimmer: rgba(255, 255, 255, 0.55);
 }
 
-/* Dark theme — follows the OS unless the user forces light via [data-theme] */
+/* Dark theme is intentionally opt-in via [data-theme="dark"] only (block below)
+   until every page is migrated onto tokens — otherwise OS dark preference would
+   turn legacy pages' dark text onto a dark background. The OS auto-activation is
+   parked here (requires data-theme="dark" to match) and re-enabled in a later
+   phase once a theme toggle ships and all pages are token-based. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root[data-theme="dark"] {
     --bg-app: #0a0f1c;
     --bg-surface: #111827;
     --bg-subtle: #1e293b;
+    --surface-translucent: rgba(17, 24, 39, 0.72);
 
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
@@ -102,6 +109,7 @@
   --bg-app: #0a0f1c;
   --bg-surface: #111827;
   --bg-subtle: #1e293b;
+  --surface-translucent: rgba(17, 24, 39, 0.72);
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;

@@ -34,15 +34,15 @@ export default function CanvasLinker({ onLinkSuccess }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Link a Canvas Account</h2>
+        <div className="card p-6">
+            <h2 className="text-lg font-semibold text-ink mb-4">Link a Canvas Account</h2>
 
             {status && (
                 <div
-                    className={`mb-4 p-3 rounded text-sm ${
+                    className={`mb-4 p-3 rounded-lg text-sm ${
                         status.type === "success"
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : "bg-red-50 text-red-700 border border-red-200"
+                            ? "bg-success-subtle text-success"
+                            : "bg-danger-subtle text-danger"
                     }`}
                 >
                     {status.message}
@@ -51,22 +51,22 @@ export default function CanvasLinker({ onLinkSuccess }) {
 
             <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                         Canvas Instance URL
                     </label>
                     <input
                         type="url"
                         value={apiBaseUrl}
                         onChange={(e) => setApiBaseUrl(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-surface text-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                         placeholder="https://canvas.instructure.com"
                     />
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-ink-faint mt-1">
                         Use your institution's Canvas URL, e.g. https://csumb.instructure.com
                     </p>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                         Canvas API Token
                     </label>
                     <input
@@ -74,17 +74,17 @@ export default function CanvasLinker({ onLinkSuccess }) {
                         required
                         value={token}
                         onChange={(e) => setToken(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full bg-surface text-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
                         placeholder="Paste your Canvas access token"
                     />
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-ink-faint mt-1">
                         Generate in Canvas: Account → Settings → New Access Token
                     </p>
                 </div>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                    className="bg-brand text-brand-fg px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-hover transition disabled:opacity-50"
                 >
                     {loading ? "Linking..." : "Link Canvas Account"}
                 </button>

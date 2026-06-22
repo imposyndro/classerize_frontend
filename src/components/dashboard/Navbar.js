@@ -77,20 +77,21 @@ export default function Navbar() {
     const streak = user?.study_streak || 0;
 
     return (
-        <nav className="flex items-center justify-between bg-blue-600 px-6 py-4 text-white shadow relative z-40">
-            <Link href="/dashboard" className="text-xl font-bold tracking-tight hover:opacity-90">
-                Classerize
+        <nav className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-[color:var(--surface-translucent)] px-6 py-3 backdrop-blur-md">
+            <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+                <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand text-brand-fg text-sm font-bold">C</span>
+                <span className="text-lg font-bold tracking-tight text-ink">Classerize</span>
             </Link>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 {loading ? (
-                    <span className="text-blue-200 text-sm">Loading…</span>
+                    <span className="text-ink-faint text-sm">Loading…</span>
                 ) : user ? (
                     <>
                         {/* Search trigger */}
                         <button
                             onClick={() => { setSearchOpen(true); setTimeout(() => searchRef.current?.focus(), 50); }}
-                            className="flex items-center gap-1.5 bg-blue-500 hover:bg-blue-400 text-blue-100 text-sm px-3 py-1.5 rounded-lg transition"
+                            className="flex items-center gap-1.5 rounded-lg border border-line bg-subtle px-3 py-1.5 text-sm text-ink-soft transition-colors duration-base hover:bg-line"
                             title="Search (⌘K)"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,37 +99,37 @@ export default function Navbar() {
                                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                             <span className="hidden sm:inline">Search</span>
-                            <kbd className="hidden sm:inline text-xs opacity-60">⌘K</kbd>
+                            <kbd className="hidden sm:inline text-xs text-ink-faint">⌘K</kbd>
                         </button>
 
                         {/* Study streak */}
                         {streak > 0 && (
-                            <span className="hidden sm:flex items-center gap-1 text-sm font-medium bg-orange-500 text-white px-2.5 py-1 rounded-full"
+                            <span className="hidden sm:flex items-center gap-1 text-sm font-semibold bg-warning-subtle text-warning px-2.5 py-1 rounded-full"
                                   title={`${streak}-day study streak`}>
                                 🔥 {streak}
                             </span>
                         )}
 
                         {/* Notification bell */}
-                        <Link href="/notifications" className="relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white hover:text-blue-100"
+                        <Link href="/notifications" className="relative text-ink-soft transition-colors hover:text-ink">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6"
                                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                       d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
                             {unreadCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                                <span className="absolute -top-1 -right-1 bg-danger text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
                                     {unreadCount > 9 ? "9+" : unreadCount}
                                 </span>
                             )}
                         </Link>
 
-                        <span className="text-sm text-blue-100 hidden sm:inline">
-                            <strong>{user.username}</strong>
+                        <span className="text-sm text-ink-soft hidden sm:inline">
+                            <strong className="text-ink font-semibold">{user.username}</strong>
                         </span>
                         <button
                             onClick={logout}
-                            className="bg-white text-blue-600 text-sm font-medium px-3 py-1 rounded hover:bg-blue-50 transition"
+                            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-ink-soft transition-colors duration-base hover:bg-subtle hover:text-ink"
                         >
                             Logout
                         </button>
@@ -138,11 +139,11 @@ export default function Navbar() {
 
             {/* Search overlay */}
             {searchOpen && (
-                <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/40 px-4"
+                <div className="fixed inset-0 z-50 flex items-start justify-center pt-24 bg-black/40 backdrop-blur-sm px-4 animate-fade-in"
                      onClick={(e) => { if (e.target === e.currentTarget) { setSearchOpen(false); setQuery(""); setResults(null); } }}>
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-                        <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
-                            <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="bg-surface rounded-tile shadow-lg w-full max-w-lg overflow-hidden border border-line animate-pop-in">
+                        <div className="flex items-center gap-3 px-4 py-3 border-b border-line">
+                            <svg className="w-5 h-5 text-ink-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -152,29 +153,29 @@ export default function Navbar() {
                                 onChange={(e) => handleSearch(e.target.value)}
                                 onKeyDown={goToSearch}
                                 placeholder="Search assignments and courses… (Enter for all)"
-                                className="flex-1 text-sm text-gray-800 placeholder-gray-400 outline-none"
+                                className="flex-1 bg-transparent text-sm text-ink placeholder-ink-faint outline-none"
                             />
-                            {searching && <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />}
+                            {searching && <div className="w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />}
                             <button onClick={() => { setSearchOpen(false); setQuery(""); setResults(null); }}
-                                    className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+                                    className="text-ink-faint hover:text-ink text-xl leading-none">×</button>
                         </div>
 
                         {results && (
-                            <div className="max-h-72 overflow-y-auto text-gray-800">
+                            <div className="max-h-72 overflow-y-auto text-ink">
                                 {results.assignments?.length > 0 && (
                                     <div>
-                                        <p className="text-xs text-gray-400 font-medium px-4 pt-3 pb-1 uppercase tracking-wide">Assignments</p>
+                                        <p className="text-xs text-ink-faint font-medium px-4 pt-3 pb-1 uppercase tracking-wide">Assignments</p>
                                         {results.assignments.map((a) => (
                                             <Link key={a.assignment_id} href="/assignments"
                                                   onClick={() => { setSearchOpen(false); setQuery(""); setResults(null); }}
-                                                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition">
+                                                  className="flex items-center gap-3 px-4 py-2 hover:bg-subtle transition-colors">
                                                 <div className="w-2.5 h-2.5 rounded-full shrink-0"
                                                      style={{ backgroundColor: a.color || "#6B7280" }} />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm font-medium truncate">{a.assignment_name}</p>
-                                                    <p className="text-xs text-gray-400">{a.course_name}</p>
+                                                    <p className="text-xs text-ink-faint">{a.course_name}</p>
                                                 </div>
-                                                <span className="text-xs text-gray-400 shrink-0">
+                                                <span className="text-xs text-ink-faint shrink-0">
                                                     {a.due_date ? new Date(a.due_date).toLocaleDateString() : ""}
                                                 </span>
                                             </Link>
@@ -183,29 +184,29 @@ export default function Navbar() {
                                 )}
                                 {results.courses?.length > 0 && (
                                     <div>
-                                        <p className="text-xs text-gray-400 font-medium px-4 pt-3 pb-1 uppercase tracking-wide">Courses</p>
+                                        <p className="text-xs text-ink-faint font-medium px-4 pt-3 pb-1 uppercase tracking-wide">Courses</p>
                                         {results.courses.map((c) => (
                                             <Link key={c.course_id} href="/gradebook"
                                                   onClick={() => { setSearchOpen(false); setQuery(""); setResults(null); }}
-                                                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition">
+                                                  className="flex items-center gap-3 px-4 py-2 hover:bg-subtle transition-colors">
                                                 <div className="w-2.5 h-2.5 rounded-full shrink-0"
                                                      style={{ backgroundColor: c.color || "#6B7280" }} />
                                                 <div>
                                                     <p className="text-sm font-medium">{c.course_name}</p>
-                                                    <p className="text-xs text-gray-400">{c.course_code}</p>
+                                                    <p className="text-xs text-ink-faint">{c.course_code}</p>
                                                 </div>
                                             </Link>
                                         ))}
                                     </div>
                                 )}
                                 {results.assignments?.length === 0 && results.courses?.length === 0 && (
-                                    <p className="text-sm text-gray-400 px-4 py-6 text-center">No results for "{query}"</p>
+                                    <p className="text-sm text-ink-faint px-4 py-6 text-center">No results for "{query}"</p>
                                 )}
                             </div>
                         )}
 
                         {!results && query.length < 2 && (
-                            <p className="text-xs text-gray-400 px-4 py-3">Type at least 2 characters to search</p>
+                            <p className="text-xs text-ink-faint px-4 py-3">Type at least 2 characters to search</p>
                         )}
                     </div>
                 </div>

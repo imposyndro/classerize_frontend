@@ -35,7 +35,7 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
     };
 
     return (
-        <div className="bg-white shadow rounded-lg p-6 flex flex-col gap-3">
+        <div className="card p-6 flex flex-col gap-3 transition-transform duration-base hover:-translate-y-0.5">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -46,24 +46,24 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
                             onChange={(e) => setTitle(e.target.value)}
                             onKeyDown={(e) => e.key === "Enter" && handleSave()}
                             autoFocus
-                            className="flex-1 border-b-2 border-blue-500 focus:outline-none text-gray-800 font-semibold text-lg"
+                            className="flex-1 bg-transparent border-b-2 border-brand focus:outline-none text-ink font-semibold text-lg"
                         />
                     ) : (
-                        <h2 className="text-lg font-semibold text-gray-800 truncate">{title}</h2>
+                        <h2 className="text-lg font-semibold text-ink truncate">{title}</h2>
                     )}
                 </div>
                 <div className="flex gap-2 ml-2 shrink-0">
                     {isEditing ? (
                         <button
                             onClick={handleSave}
-                            className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                            className="px-3 py-1 bg-success text-white text-xs rounded-lg hover:opacity-90 transition"
                         >
                             Save
                         </button>
                     ) : (
                         <button
                             onClick={() => setIsEditing(true)}
-                            className="px-3 py-1 bg-gray-200 text-gray-600 text-xs rounded hover:bg-gray-300"
+                            className="px-3 py-1 bg-subtle text-ink-soft text-xs rounded-lg hover:bg-line transition"
                         >
                             Rename
                         </button>
@@ -72,13 +72,13 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
             </div>
 
             {/* Meta */}
-            <p className="text-xs text-gray-400 truncate">{account.api_base_url || "No URL"}</p>
+            <p className="text-xs text-ink-faint truncate">{account.api_base_url || "No URL"}</p>
             <div className="flex items-center gap-2 flex-wrap">
-                <span className="inline-block text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                <span className="inline-block text-xs bg-brand-subtle text-brand px-2 py-0.5 rounded-full font-medium">
                     {account.lms_name}
                 </span>
                 {account.last_synced && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-ink-faint">
                         Last synced: {new Date(account.last_synced).toLocaleString()}
                     </span>
                 )}
@@ -89,12 +89,12 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
                 <button
                     onClick={handleSync}
                     disabled={syncing}
-                    className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition disabled:opacity-50"
+                    className="text-xs bg-brand text-brand-fg px-3 py-1.5 rounded-lg hover:bg-brand-hover transition disabled:opacity-50"
                 >
                     {syncing ? "Syncing…" : "Sync Now"}
                 </button>
                 {syncResult && (
-                    <span className={`text-xs ${syncResult.ok ? "text-green-600" : "text-red-500"}`}>
+                    <span className={`text-xs ${syncResult.ok ? "text-success" : "text-danger"}`}>
                         {syncResult.text}
                     </span>
                 )}
@@ -102,7 +102,7 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
 
             {/* Courses */}
             <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Courses</h3>
+                <h3 className="text-sm font-semibold text-ink-soft mb-2">Courses</h3>
                 {account.courses?.filter((c) => c.name && c.id).length > 0 ? (
                     <ul className="space-y-1">
                         {account.courses
@@ -111,35 +111,35 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
                                 <li key={`${account.account_id}-${course.id}`}>
                                     <button
                                         onClick={() => router.push(`/course/${course.id}`)}
-                                        className="w-full text-left text-sm px-3 py-1.5 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 transition truncate"
+                                        className="w-full text-left text-sm px-3 py-1.5 bg-brand-subtle text-brand rounded-lg hover:brightness-95 transition truncate"
                                     >
                                         {course.name}
                                         {course.course_code && (
-                                            <span className="text-blue-400 ml-1">({course.course_code})</span>
+                                            <span className="opacity-60 ml-1">({course.course_code})</span>
                                         )}
                                     </button>
                                 </li>
                             ))}
                     </ul>
                 ) : (
-                    <p className="text-sm text-gray-400">No courses found.</p>
+                    <p className="text-sm text-ink-faint">No courses found.</p>
                 )}
             </div>
 
             {/* Delete */}
-            <div className="pt-2 border-t border-gray-100">
+            <div className="pt-2 border-t border-line">
                 {confirmDelete ? (
                     <div className="flex gap-2 items-center">
-                        <span className="text-xs text-gray-500">Remove this account?</span>
+                        <span className="text-xs text-ink-soft">Remove this account?</span>
                         <button
                             onClick={() => onDelete?.(account.account_id)}
-                            className="text-xs text-red-600 font-medium hover:underline"
+                            className="text-xs text-danger font-medium hover:underline"
                         >
                             Yes, remove
                         </button>
                         <button
                             onClick={() => setConfirmDelete(false)}
-                            className="text-xs text-gray-400 hover:underline"
+                            className="text-xs text-ink-faint hover:underline"
                         >
                             Cancel
                         </button>
@@ -147,7 +147,7 @@ export default function AccountCard({ account, onUpdateTitle, onDelete, onSyncSu
                 ) : (
                     <button
                         onClick={() => setConfirmDelete(true)}
-                        className="text-xs text-gray-400 hover:text-red-500 transition"
+                        className="text-xs text-ink-faint hover:text-danger transition"
                     >
                         Remove account
                     </button>
