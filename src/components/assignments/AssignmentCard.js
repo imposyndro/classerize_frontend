@@ -12,6 +12,19 @@ const STATUS_STYLES = {
     excused:   "bg-gray-100 text-gray-500",
 };
 
+function startByLabel(dueDate, pointsPossible) {
+    if (!dueDate) return null;
+    const due = new Date(dueDate).getTime();
+    const now = Date.now();
+    const daysLeft = Math.round((due - now) / 864e5);
+    if (daysLeft < 0) return null;
+    const daysNeeded = Math.max(1, Math.ceil((Number(pointsPossible) || 50) / 50));
+    const startIn = daysLeft - Math.min(daysNeeded, 7);
+    if (startIn <= 0) return "Start today";
+    if (startIn === 1) return "Start tomorrow";
+    return `Start in ${startIn}d`;
+}
+
 export default function AssignmentCard({ assignment, onMarkStatus, onProgressChange }) {
     const [showSummary, setShowSummary]   = useState(false);
     const [localProgress, setLocalProgress] = useState(assignment.progress ?? 0);
@@ -64,6 +77,12 @@ export default function AssignmentCard({ assignment, onMarkStatus, onProgressCha
                 {assignment.points_possible && (
                     <span>{assignment.points_possible} pts</span>
                 )}
+                {!isGraded && assignment.status === "pending" && (() => {
+                    const hint = startByLabel(assignment.due_date, assignment.points_possible);
+                    return hint ? (
+                        <span className="bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{hint}</span>
+                    ) : null;
+                })()}
                 <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">
                     {assignment.lms_name}
                 </span>

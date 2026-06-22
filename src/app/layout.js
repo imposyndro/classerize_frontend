@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "../styles/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import FocusTimer from "@/components/timer/FocusTimer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
           {children}
+          <FocusTimer />
         </AuthProvider>
       </body>
     </html>

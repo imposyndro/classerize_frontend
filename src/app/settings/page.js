@@ -5,7 +5,9 @@ import Navbar from "@/components/dashboard/Navbar";
 import { withAuth, useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
-const TABS = ["Linked Accounts", "Notifications", "AI", "Connected Services"];
+const TABS = ["Linked Accounts", "Notifications", "AI", "Schedule", "Connected Services"];
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const useSearchParams = () => {
     if (typeof window === "undefined") return new URLSearchParams();
@@ -60,6 +62,40 @@ function SettingsPage() {
         };
         fetchData();
     }, []);
+
+    // ── Schedule tab ─────────────────────────────────────────────────────────
+    const [sessions, setSessions] = useState([]);
+    const [courses, setCourses]   = useState([]);
+    const [schedForm, setSchedForm] = useState({ course_id: "", day_of_week: "1", start_time: "09:00", end_time: "10:00", location: "" });
+    const [schedMsg, setSchedMsg] = useState(null);
+
+    useEffect(() => {
+        if (activeTab !== "Schedule") return;
+        Promise.all([
+            apiClient.get("/api/schedule"),
+            apiClient.get("/api/courses"),
+        ]).then(async ([sRes, cRes]) => {
+            if (sRes?.ok) { const d = await sRes.json(); setSessions(d.sessions || []); }
+            if (cRes?.ok) { const d = await cRes.json(); setCourses(d.courses || []); }
+        });
+    }, [activeTab]);
+
+    const addSession = async () => {
+        if (!schedForm.course_id) return setSchedMsg({ type: "error", text: "Select a course." });
+        const res = await apiClient.post("/api/schedule", {
+            ...schedForm, course_id: Number(schedForm.course_id), day_of_week: Number(schedForm.day_of_week),
+        });
+        if (res?.ok) {
+            const sRes = await apiClient.get("/api/schedule");
+            if (sRes?.ok) { const d = await sRes.json(); setSessions(d.sessions || []); }
+            setSchedMsg({ type: "success", text: "Class added." });
+        } else setSchedMsg({ type: "error", text: "Failed to add class." });
+    };
+
+    const deleteSession = async (id) => {
+        await apiClient.delete(`/api/schedule/${id}`);
+        setSessions((prev) => prev.filter((s) => s.session_id !== id));
+    };
 
     useEffect(() => {
         if (activeTab !== "AI" || aiSettings) return;
@@ -343,6 +379,90 @@ function SettingsPage() {
                             >
                                 {aiSaving ? "Saving..." : "Save AI Settings"}
                             </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Schedule tab */}
+                {activeTab === "Schedule" && (
+                    <div className="bg-white rounded-lg shadow p-6 space-y-6">
+                        <div>
+                            <h3 className="font-semibold text-gray-800 mb-4">Add recurring class</h3>
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div className="col-span-2">
+                                    <label className="text-xs text-gray-500 mb-1 block">Course</label>
+                                    <select value={schedForm.course_id}
+                                            onChange={(e) => setSchedForm((f) => ({ ...f, course_id: e.target.value }))}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none">
+                                        <option value="">Select a course…</option>
+                                        {courses.map((c) => (
+                                            <option key={c.course_id} value={c.course_id}>
+                                                {c.course_name}{c.course_code ? ` (${c.course_code})` : ""}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">Day</label>
+                                    <select value={schedForm.day_of_week}
+                                            onChange={(e) => setSchedForm((f) => ({ ...f, day_of_week: e.target.value }))}
+                                            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none">
+                                        {DAY_NAMES.map((d, i) => <option key={i} value={i}>{d}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">Location</label>
+                                    <input type="text" placeholder="e.g. Room 204"
+                                           value={schedForm.location}
+                                           onChange={(e) => setSchedForm((f) => ({ ...f, location: e.target.value }))}
+                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">Start time</label>
+                                    <input type="time" value={schedForm.start_time}
+                                           onChange={(e) => setSchedForm((f) => ({ ...f, start_time: e.target.value }))}
+                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-500 mb-1 block">End time</label>
+                                    <input type="time" value={schedForm.end_time}
+                                           onChange={(e) => setSchedForm((f) => ({ ...f, end_time: e.target.value }))}
+                                           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-blue-400 focus:outline-none" />
+                                </div>
+                            </div>
+                            {schedMsg && (
+                                <p className={`text-xs mb-2 ${schedMsg.type === "error" ? "text-red-500" : "text-green-600"}`}>{schedMsg.text}</p>
+                            )}
+                            <button onClick={addSession}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+                                Add class
+                            </button>
+                        </div>
+
+                        <div>
+                            <h3 className="font-semibold text-gray-800 mb-3">Weekly schedule</h3>
+                            {sessions.length === 0 ? (
+                                <p className="text-sm text-gray-400">No classes added yet.</p>
+                            ) : (
+                                <div className="space-y-2">
+                                    {sessions.map((s) => (
+                                        <div key={s.session_id}
+                                             className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50">
+                                            <div className="w-1 h-10 rounded-full flex-shrink-0"
+                                                 style={{ backgroundColor: s.color || "#6B7280" }} />
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-800">{s.course_name}</p>
+                                                <p className="text-xs text-gray-400">
+                                                    {DAY_NAMES[s.day_of_week]} · {s.start_time.slice(0,5)}–{s.end_time.slice(0,5)}
+                                                    {s.location ? ` · ${s.location}` : ""}
+                                                </p>
+                                            </div>
+                                            <button onClick={() => deleteSession(s.session_id)}
+                                                    className="text-gray-300 hover:text-red-400 transition text-sm">✕</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
