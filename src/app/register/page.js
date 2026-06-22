@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/apiClient";
+import Button from "@/components/ui/Button";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -84,13 +85,9 @@ export default function RegisterPage() {
                             8+ characters, including uppercase, lowercase, number, and special character
                         </p>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-brand text-brand-fg py-2 rounded-lg font-medium hover:bg-brand-hover transition disabled:opacity-50"
-                    >
+                    <Button type="submit" loading={loading} className="w-full">
                         {loading ? "Creating account..." : "Create Account"}
-                    </button>
+                    </Button>
                 </form>
 
                 <div className="mt-4">

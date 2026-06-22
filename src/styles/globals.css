@@ -206,6 +206,18 @@
 @keyframes shimmer {
   100% { transform: translateX(100%); }
 }
+@keyframes growUp {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+@keyframes growRight {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Bars/meters that animate in from nothing. */
+.grow-up    { transform-origin: bottom; animation: growUp 0.6s var(--ease-out) both; }
+.grow-right { transform-origin: left;   animation: growRight 0.7s var(--ease-out) both; }
 
 /* Respect users who prefer less motion. */
 @media (prefers-reduced-motion: reduce) {

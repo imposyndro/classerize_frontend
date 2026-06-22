@@ -91,19 +91,21 @@ function ReviewInner() {
                             <div className="h-full bg-brand transition-all" style={{ width: `${(idx / queue.length) * 100}%` }} />
                         </div>
 
-                        {/* Card */}
-                        <div
-                            onClick={() => setFlipped((f) => !f)}
-                            className="bg-surface rounded-tile shadow-lg border border-line min-h-[16rem] flex flex-col items-center justify-center p-8 cursor-pointer select-none text-center"
-                        >
-                            {current.deck_title && <p className="text-xs text-ink-faint mb-3 uppercase tracking-wide">{current.deck_title}</p>}
-                            <p className="text-xl font-medium text-ink whitespace-pre-wrap">{current.front}</p>
-                            {flipped && (
-                                <>
-                                    <div className="w-full border-t border-line my-5" />
-                                    <p className="text-lg text-ink-soft whitespace-pre-wrap">{current.back}</p>
-                                </>
-                            )}
+                        {/* Card (3D flip) */}
+                        <div style={{ perspective: "1200px" }} className="cursor-pointer select-none" onClick={() => setFlipped((f) => !f)}>
+                            <div className={`relative h-72 transition-transform duration-500 ease-out-soft [transform-style:preserve-3d] ${flipped ? "[transform:rotateY(180deg)]" : ""}`}>
+                                {/* Front */}
+                                <div className="absolute inset-0 [backface-visibility:hidden] bg-surface rounded-tile shadow-lg border border-line flex flex-col items-center justify-center p-8 text-center overflow-auto">
+                                    {current.deck_title && <p className="text-xs text-ink-faint mb-3 uppercase tracking-wide">{current.deck_title}</p>}
+                                    <p className="text-xl font-medium text-ink whitespace-pre-wrap">{current.front}</p>
+                                    <p className="mt-4 text-xs text-ink-faint">Tap or press space to flip</p>
+                                </div>
+                                {/* Back */}
+                                <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-surface rounded-tile shadow-lg border border-line flex flex-col items-center justify-center p-8 text-center overflow-auto">
+                                    <p className="text-xs text-ink-faint mb-3 uppercase tracking-wide">Answer</p>
+                                    <p className="text-lg text-ink whitespace-pre-wrap">{current.back}</p>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Controls */}

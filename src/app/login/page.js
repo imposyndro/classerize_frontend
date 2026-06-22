@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/apiClient";
 import { useAuth } from "@/context/AuthContext";
+import Button from "@/components/ui/Button";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -70,13 +71,9 @@ export default function LoginPage() {
                             className={inputCls}
                         />
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-brand text-brand-fg py-2 rounded-lg font-medium hover:bg-brand-hover transition disabled:opacity-50"
-                    >
+                    <Button type="submit" loading={loading} className="w-full">
                         {loading ? "Signing in..." : "Sign In"}
-                    </button>
+                    </Button>
                 </form>
 
                 <div className="mt-4">

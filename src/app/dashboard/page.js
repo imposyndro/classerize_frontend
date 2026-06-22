@@ -8,6 +8,7 @@ import CanvasLinker from "@/components/dashboard/CanvasLinker";
 import CalendarView from "@/components/dashboard/CalendarView";
 import { withAuth, useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
+import { useCountUp } from "@/hooks/useCountUp";
 import {
     FiZap, FiUpload, FiPlus, FiCalendar, FiArrowRight,
 } from "react-icons/fi";
@@ -46,6 +47,7 @@ function GradeHero({ summary, loading }) {
     const avg = graded.length
         ? graded.reduce((s, r) => s + Number(r.grade_percent), 0) / graded.length
         : null;
+    const counted = useCountUp(avg ?? 0, { decimals: 1 });
 
     if (loading) {
         return <Tile className="sm:col-span-2"><div className="skeleton h-28 w-full" /></Tile>;
@@ -72,7 +74,7 @@ function GradeHero({ summary, loading }) {
                     <p className="text-sm text-ink-soft">Overall grade</p>
                     <div className="mt-1 flex items-baseline gap-2">
                         <span className={`text-4xl font-bold tabular-nums tracking-tight ${toneFor(avg)}`}>
-                            {avg.toFixed(1)}%
+                            {counted.toFixed(1)}%
                         </span>
                         <span className={`text-lg font-semibold ${toneFor(avg)}`}>{letterFor(avg)}</span>
                     </div>
@@ -86,7 +88,7 @@ function GradeHero({ summary, loading }) {
                 {graded.slice(0, 10).map((r) => (
                     <div key={r.course_id} className="flex-1 min-w-0" title={`${r.course_name}: ${Number(r.grade_percent).toFixed(1)}%`}>
                         <div className="w-full rounded-t bg-subtle h-14 flex items-end overflow-hidden">
-                            <div className={`w-full rounded-t ${barFor(Number(r.grade_percent))}`}
+                            <div className={`w-full rounded-t grow-up ${barFor(Number(r.grade_percent))}`}
                                  style={{ height: `${Math.max(8, Number(r.grade_percent))}%` }} />
                         </div>
                     </div>
@@ -97,10 +99,13 @@ function GradeHero({ summary, loading }) {
 }
 
 function StatTile({ label, value, sub, accent = "text-ink", href, hrefLabel, delay }) {
+    const numeric = typeof value === "number";
+    const counted = useCountUp(numeric ? value : 0);
+    const display = numeric ? counted : value;
     const inner = (
         <Tile delay={delay} className="h-full">
             <p className="text-sm text-ink-soft">{label}</p>
-            <p className={`mt-1 text-3xl font-bold tabular-nums tracking-tight ${accent}`}>{value}</p>
+            <p className={`mt-1 text-3xl font-bold tabular-nums tracking-tight ${accent}`}>{display}</p>
             {sub && <p className="mt-1 text-xs text-ink-faint">{sub}</p>}
             {href && (
                 <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-brand">
@@ -276,7 +281,7 @@ function DashboardPage() {
                 />
                 <StatTile
                     label="Study streak"
-                    value={`${streak}`}
+                    value={streak}
                     sub={streak > 0 ? "days in a row 🔥" : "Start one today"}
                     accent="text-warning"
                     delay={120}

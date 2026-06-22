@@ -47,7 +47,7 @@ export default function DashboardLayout({ children }) {
                         })}
                     </nav>
                 </aside>
-                <main className="flex-1 p-6">{children}</main>
+                <main key={pathname} className="flex-1 p-6 animate-fade-in">{children}</main>
             </div>
         </div>
     );

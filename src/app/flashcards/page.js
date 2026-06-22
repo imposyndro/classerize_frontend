@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { withAuth } from "@/context/AuthContext";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import apiClient from "@/lib/apiClient";
+import { useCountUp } from "@/hooks/useCountUp";
 
 function FlashcardsPage() {
     const router = useRouter();
@@ -124,9 +125,10 @@ function FlashcardsPage() {
 }
 
 function StatCard({ label, value, accent }) {
+    const counted = useCountUp(Number(value) || 0);
     return (
         <div className="card p-4">
-            <p className={`text-3xl font-bold tabular-nums ${accent}`}>{value}</p>
+            <p className={`text-3xl font-bold tabular-nums ${accent}`}>{counted}</p>
             <p className="text-xs text-ink-faint mt-1 uppercase tracking-wide">{label}</p>
         </div>
     );
