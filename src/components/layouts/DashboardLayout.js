@@ -8,7 +8,9 @@ const NAV_LINKS = [
     { href: "/dashboard",       label: "Dashboard" },
     { href: "/assignments",     label: "Assignments" },
     { href: "/gradebook",       label: "Gradebook" },
+    { href: "/flashcards",      label: "Flashcards" },
     { href: "/study-schedule",  label: "Study Schedule" },
+    { href: "/import",          label: "Import Syllabus" },
     { href: "/notifications",   label: "Notifications" },
     { href: "/settings",        label: "Settings" },
 ];

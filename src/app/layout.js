@@ -2,6 +2,7 @@ import localFont from "next/font/local";
 import "../styles/globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import FocusTimer from "@/components/timer/FocusTimer";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,6 +18,15 @@ const geistMono = localFont({
 export const metadata = {
   title: "Classerize — Your Unified Learning Dashboard",
   description: "Aggregate courses, assignments, and grades from all your institutions in one place.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Classerize",
+  },
+};
+
+export const viewport = {
+  themeColor: "#2563eb",
 };
 
 export default function RootLayout({ children }) {
@@ -27,6 +37,7 @@ export default function RootLayout({ children }) {
           {children}
           <FocusTimer />
         </AuthProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

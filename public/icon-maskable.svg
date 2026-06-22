@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#2563eb"/>
+  <!-- content kept within the central ~70% maskable safe zone -->
+  <path d="M256 170 L380 226 L256 282 L132 226 Z" fill="#ffffff"/>
+  <path d="M180 252 L180 318 Q256 362 332 318 L332 252 L256 290 Z" fill="#bfdbfe"/>
+  <rect x="372" y="226" width="9" height="70" rx="4" fill="#ffffff"/>
+  <circle cx="376" cy="308" r="10" fill="#ffffff"/>
+</svg>

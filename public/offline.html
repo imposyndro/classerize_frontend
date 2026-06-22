@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline — Classerize</title>
+    <style>
+        html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+        body { display: flex; align-items: center; justify-content: center; background: #f3f4f6; color: #374151; }
+        .card { text-align: center; padding: 2rem; }
+        .emoji { font-size: 3rem; }
+        h1 { font-size: 1.25rem; margin: 0.75rem 0 0.25rem; }
+        p { color: #6b7280; font-size: 0.9rem; margin: 0 0 1.5rem; }
+        button { background: #2563eb; color: #fff; border: 0; border-radius: 0.5rem; padding: 0.6rem 1.2rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="emoji">📡</div>
+        <h1>You're offline</h1>
+        <p>Classerize needs a connection to load fresh data.<br />Cached pages you've already visited still work.</p>
+        <button onclick="location.reload()">Try again</button>
+    </div>
+</body>
+</html>
