@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/apiClient";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
     const router = useRouter();
+    const { refetch } = useAuth();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -18,6 +20,7 @@ export default function LoginPage() {
         try {
             const res = await apiClient.post("/api/auth/login", form);
             if (res?.ok) {
+                await refetch();
                 router.push("/dashboard");
             } else {
                 const data = await res.json();

@@ -59,6 +59,8 @@ export function withAuth(Component) {
         useEffect(() => {
             if (!loading && !user) {
                 router.push("/login");
+            } else if (!loading && user && !user.onboarding_complete) {
+                router.push("/welcome");
             }
         }, [user, loading, router]);
 

@@ -17,12 +17,10 @@ async function request(path, options = {}) {
         },
     });
 
-    // Redirect to login on 401 (client-side only)
-    if (res.status === 401 && typeof window !== 'undefined') {
-        window.location.href = '/login';
-        return;
-    }
-
+    // NOTE: do NOT hard-redirect on 401 here. A 401 from /api/auth/current-user
+    // is expected when logged out (e.g. on the login page itself) and a forced
+    // window.location redirect would cause an infinite reload loop. Auth-based
+    // routing is handled by AuthContext + the withAuth HOC instead.
     return res;
 }
 
