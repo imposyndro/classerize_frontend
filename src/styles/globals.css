@@ -65,13 +65,11 @@
   --shimmer: rgba(255, 255, 255, 0.55);
 }
 
-/* Dark theme is intentionally opt-in via [data-theme="dark"] only (block below)
-   until every page is migrated onto tokens — otherwise OS dark preference would
-   turn legacy pages' dark text onto a dark background. The OS auto-activation is
-   parked here (requires data-theme="dark" to match) and re-enabled in a later
-   phase once a theme toggle ships and all pages are token-based. */
+/* Dark theme. Now that every page is token-based, the OS preference is honoured
+   as the default (when the user hasn't made an explicit choice via the toggle).
+   An explicit [data-theme="light"] or [data-theme="dark"] always wins. */
 @media (prefers-color-scheme: dark) {
-  :root[data-theme="dark"] {
+  :root:not([data-theme]) {
     --bg-app: #0a0f1c;
     --bg-surface: #111827;
     --bg-subtle: #1e293b;

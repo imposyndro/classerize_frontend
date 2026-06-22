@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
     const { user, loading, logout } = useAuth();
@@ -109,6 +110,9 @@ export default function Navbar() {
                                 🔥 {streak}
                             </span>
                         )}
+
+                        {/* Theme toggle */}
+                        <ThemeToggle />
 
                         {/* Notification bell */}
                         <Link href="/notifications" className="relative text-ink-soft transition-colors hover:text-ink">

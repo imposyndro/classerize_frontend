@@ -33,42 +33,47 @@ export default function LoginPage() {
         }
     };
 
+    const inputCls = "w-full bg-surface text-ink border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand";
+
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="w-full max-w-md bg-white rounded-xl shadow-md p-8">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Sign in to Classerize</h1>
+        <div className="min-h-screen flex items-center justify-center bg-app px-4">
+            <div className="w-full max-w-md card-tile p-8 animate-fade-up">
+                <div className="flex items-center gap-2 mb-6">
+                    <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand text-brand-fg text-sm font-bold">C</span>
+                    <h1 className="text-2xl font-bold text-ink">Sign in to Classerize</h1>
+                </div>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-600 text-sm">
+                    <div className="mb-4 p-3 bg-danger-subtle text-danger rounded-lg text-sm">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label className="block text-sm font-medium text-ink-soft mb-1">Email</label>
                         <input
                             type="email"
                             required
                             value={form.email}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={inputCls}
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <label className="block text-sm font-medium text-ink-soft mb-1">Password</label>
                         <input
                             type="password"
                             required
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={inputCls}
                         />
                     </div>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
+                        className="w-full bg-brand text-brand-fg py-2 rounded-lg font-medium hover:bg-brand-hover transition disabled:opacity-50"
                     >
                         {loading ? "Signing in..." : "Sign In"}
                     </button>
@@ -76,13 +81,13 @@ export default function LoginPage() {
 
                 <div className="mt-4">
                     <div className="relative flex items-center gap-2 my-4">
-                        <div className="flex-1 border-t border-gray-200" />
-                        <span className="text-xs text-gray-400">or</span>
-                        <div className="flex-1 border-t border-gray-200" />
+                        <div className="flex-1 border-t border-line" />
+                        <span className="text-xs text-ink-faint">or</span>
+                        <div className="flex-1 border-t border-line" />
                     </div>
                     <a
                         href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/auth/google`}
-                        className="flex items-center justify-center gap-2 w-full border border-gray-300 rounded-lg px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
+                        className="flex items-center justify-center gap-2 w-full border border-line rounded-lg px-4 py-2 text-sm text-ink-soft hover:bg-subtle transition"
                     >
                         <svg className="w-4 h-4" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -94,9 +99,9 @@ export default function LoginPage() {
                     </a>
                 </div>
 
-                <p className="mt-6 text-center text-sm text-gray-500">
+                <p className="mt-6 text-center text-sm text-ink-soft">
                     No account?{" "}
-                    <Link href="/register" className="text-blue-600 hover:underline font-medium">
+                    <Link href="/register" className="text-brand hover:underline font-medium">
                         Sign up
                     </Link>
                 </p>
