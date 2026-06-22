@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { withAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
@@ -96,15 +96,14 @@ function SearchResults() {
 
 function SearchPage() {
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8 max-w-2xl">
+        <DashboardLayout>
+            <div className="max-w-2xl">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">Search</h1>
                 <Suspense fallback={<div className="text-gray-400">Loading…</div>}>
                     <SearchResults />
                 </Suspense>
-            </main>
-        </div>
+            </div>
+        </DashboardLayout>
     );
 }
 

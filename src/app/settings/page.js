@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { withAuth, useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
@@ -163,9 +163,8 @@ function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8 max-w-3xl">
+        <DashboardLayout>
+            <div className="max-w-3xl">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">Settings</h1>
 
                 {globalMessage && (
@@ -506,8 +505,8 @@ function SettingsPage() {
                         </p>
                     </div>
                 )}
-            </main>
-        </div>
+            </div>
+        </DashboardLayout>
     );
 }
 

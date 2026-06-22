@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import TrendChart from "@/components/gradebook/TrendChart";
 import { withAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
@@ -265,38 +265,35 @@ function GradebookPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8">
-                <h1 className="text-2xl font-bold text-gray-800 mb-6">Gradebook</h1>
+        <DashboardLayout>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">Gradebook</h1>
 
-                {loading ? (
-                    <div className="space-y-3">
-                        {[1,2,3].map(i => (
-                            <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
-                                <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-                                <div className="h-3 bg-gray-100 rounded w-1/4" />
-                            </div>
-                        ))}
-                    </div>
-                ) : summary.length === 0 ? (
-                    <div className="text-center py-16 text-gray-500">
-                        No grade data yet. Sync your accounts from the dashboard to pull grades.
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
-                        {summary.map((row) => (
-                            <GradeRow
-                                key={row.course_id}
-                                row={row}
-                                courseColors={courseColors}
-                                onColorChange={handleColorChange}
-                            />
-                        ))}
-                    </div>
-                )}
-            </main>
-        </div>
+            {loading ? (
+                <div className="space-y-3">
+                    {[1,2,3].map(i => (
+                        <div key={i} className="bg-white rounded-lg shadow p-4 animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+                            <div className="h-3 bg-gray-100 rounded w-1/4" />
+                        </div>
+                    ))}
+                </div>
+            ) : summary.length === 0 ? (
+                <div className="text-center py-16 text-gray-500">
+                    No grade data yet. Sync your accounts from the dashboard to pull grades.
+                </div>
+            ) : (
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                    {summary.map((row) => (
+                        <GradeRow
+                            key={row.course_id}
+                            row={row}
+                            courseColors={courseColors}
+                            onColorChange={handleColorChange}
+                        />
+                    ))}
+                </div>
+            )}
+        </DashboardLayout>
     );
 }
 

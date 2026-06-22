@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { withAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
 
@@ -30,9 +30,8 @@ function NotificationsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8 max-w-2xl">
+        <DashboardLayout>
+            <div className="max-w-2xl">
                 <h1 className="text-2xl font-bold text-gray-800 mb-6">Notifications</h1>
                 {loading ? (
                     <p className="text-gray-400">Loading...</p>
@@ -62,8 +61,8 @@ function NotificationsPage() {
                         ))}
                     </div>
                 )}
-            </main>
-        </div>
+            </div>
+        </DashboardLayout>
     );
 }
 

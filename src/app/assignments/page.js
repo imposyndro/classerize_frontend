@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import AssignmentCard from "@/components/assignments/AssignmentCard";
 import AddAssignmentModal from "@/components/assignments/AddAssignmentModal";
 import { withAuth } from "@/context/AuthContext";
@@ -65,9 +65,8 @@ function AssignmentsPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main className="container mx-auto px-4 py-8">
+        <DashboardLayout>
+            <div>
                 {/* Title row */}
                 <div className="flex items-center justify-between mb-5">
                     <div>
@@ -161,7 +160,7 @@ function AssignmentsPage() {
                         ))}
                     </div>
                 )}
-            </main>
+            </div>
 
             {showModal && (
                 <AddAssignmentModal
@@ -169,7 +168,7 @@ function AssignmentsPage() {
                     onCreated={fetchAssignments}
                 />
             )}
-        </div>
+        </DashboardLayout>
     );
 }
 

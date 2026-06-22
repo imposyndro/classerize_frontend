@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { withAuth } from "@/context/AuthContext";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import apiClient from "@/lib/apiClient";
 
 function CoursePage({ params }) {
@@ -43,22 +44,26 @@ function CoursePage({ params }) {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <p className="text-gray-500">Loading course...</p>
-            </div>
+            <DashboardLayout>
+                <div className="flex items-center justify-center py-24">
+                    <p className="text-gray-500">Loading course...</p>
+                </div>
+            </DashboardLayout>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <p className="text-red-500">{error}</p>
-            </div>
+            <DashboardLayout>
+                <div className="flex items-center justify-center py-24">
+                    <p className="text-red-500">{error}</p>
+                </div>
+            </DashboardLayout>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <DashboardLayout>
             <button
                 onClick={() => router.back()}
                 className="mb-4 text-blue-600 hover:underline text-sm"
@@ -116,7 +121,7 @@ function CoursePage({ params }) {
                     </ul>
                 )}
             </div>
-        </div>
+        </DashboardLayout>
     );
 }
 

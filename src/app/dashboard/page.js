@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import Navbar from "@/components/dashboard/Navbar";
+import DashboardLayout from "@/components/layouts/DashboardLayout";
 import AccountCard from "@/components/dashboard/AccountCard";
 import CanvasLinker from "@/components/dashboard/CanvasLinker";
 import CalendarView from "@/components/dashboard/CalendarView";
@@ -96,49 +96,45 @@ function DashboardPage() {
     }, [fetchLinkedAccounts]);
 
     return (
-        <div className="min-h-screen flex flex-col bg-gray-100">
-            <Navbar />
-            <main className="container mx-auto py-10 px-4 flex-1">
-                <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Dashboard</h1>
+        <DashboardLayout>
+            <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Dashboard</h1>
 
-                <StartTodayWidget />
+            <StartTodayWidget />
 
-                {loadingAccounts ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
-                                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
-                                <div className="h-3 bg-gray-100 rounded w-1/2 mb-2" />
-                                <div className="h-3 bg-gray-100 rounded w-2/3" />
-                            </div>
-                        ))}
-                    </div>
-                ) : linkedAccounts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        {linkedAccounts.map((account) => (
-                            <AccountCard
-                                key={account.account_id}
-                                account={account}
-                                onUpdateTitle={updateAccountTitle}
-                                onDelete={deleteAccount}
-                                onSyncSuccess={fetchLinkedAccounts}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-16">
-                        <p className="text-gray-500 text-lg mb-2">No LMS accounts linked yet.</p>
-                        <p className="text-gray-400 text-sm">Connect your Canvas account below to get started.</p>
-                    </div>
-                )}
-            </main>
-            <div className="container mx-auto px-4 pb-6">
-                <CanvasLinker onLinkSuccess={fetchLinkedAccounts} />
-            </div>
-            <div className="container mx-auto px-4 pb-10">
+            {loadingAccounts ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="bg-white rounded-lg shadow p-6 animate-pulse">
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-4" />
+                            <div className="h-3 bg-gray-100 rounded w-1/2 mb-2" />
+                            <div className="h-3 bg-gray-100 rounded w-2/3" />
+                        </div>
+                    ))}
+                </div>
+            ) : linkedAccounts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    {linkedAccounts.map((account) => (
+                        <AccountCard
+                            key={account.account_id}
+                            account={account}
+                            onUpdateTitle={updateAccountTitle}
+                            onDelete={deleteAccount}
+                            onSyncSuccess={fetchLinkedAccounts}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center py-16">
+                    <p className="text-gray-500 text-lg mb-2">No LMS accounts linked yet.</p>
+                    <p className="text-gray-400 text-sm">Connect your Canvas account below to get started.</p>
+                </div>
+            )}
+
+            <CanvasLinker onLinkSuccess={fetchLinkedAccounts} />
+            <div className="mt-6">
                 <CalendarView />
             </div>
-        </div>
+        </DashboardLayout>
     );
 }
 
