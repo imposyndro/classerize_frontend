@@ -118,30 +118,30 @@ export default function FocusTimer() {
                 >
                     {running ? "⏸" : "⏱"}
                     {running && (
-                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                        <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-danger animate-pulse" />
                     )}
                 </button>
             )}
 
             {/* Timer panel */}
             {open && (
-                <div className="fixed bottom-6 right-6 z-40 bg-white rounded-2xl shadow-2xl w-72 overflow-hidden">
+                <div className="fixed bottom-6 right-6 z-40 bg-surface rounded-2xl shadow-lg border border-line w-72 overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                        <span className="text-sm font-semibold text-gray-700">Focus Timer</span>
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+                        <span className="text-sm font-semibold text-ink">Focus Timer</span>
                         <div className="flex items-center gap-2">
                             {pomodorosDone > 0 && (
-                                <span className="text-xs text-orange-500 font-medium">🍅 ×{pomodorosDone}</span>
+                                <span className="text-xs text-warning font-medium">🍅 ×{pomodorosDone}</span>
                             )}
-                            <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">×</button>
+                            <button onClick={() => setOpen(false)} className="text-ink-faint hover:text-ink">×</button>
                         </div>
                     </div>
 
                     {/* Mode tabs */}
-                    <div className="flex border-b border-gray-100">
+                    <div className="flex border-b border-line">
                         {Object.entries(MODES).map(([key, m]) => (
                             <button key={key} onClick={() => switchMode(key)}
-                                    className={`flex-1 text-xs py-1.5 font-medium transition ${mode === key ? "text-white" : "text-gray-500 hover:text-gray-700"}`}
+                                    className={`flex-1 text-xs py-1.5 font-medium transition ${mode === key ? "text-white" : "text-ink-soft hover:text-ink"}`}
                                     style={mode === key ? { backgroundColor: m.color } : {}}>
                                 {m.label}
                             </button>
@@ -152,7 +152,7 @@ export default function FocusTimer() {
                     <div className="flex flex-col items-center py-5 px-4">
                         <div className="relative w-24 h-24 mb-3">
                             <svg viewBox="0 0 80 80" className="w-full h-full -rotate-90">
-                                <circle cx="40" cy="40" r="36" fill="none" stroke="#f3f4f6" strokeWidth="6" />
+                                <circle cx="40" cy="40" r="36" fill="none" stroke="var(--bg-subtle)" strokeWidth="6" />
                                 <circle cx="40" cy="40" r="36" fill="none"
                                         stroke={currentMode.color} strokeWidth="6"
                                         strokeDasharray={circumference}
@@ -161,7 +161,7 @@ export default function FocusTimer() {
                                         style={{ transition: "stroke-dashoffset 1s linear" }} />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-xl font-bold text-gray-800 tabular-nums">
+                                <span className="text-xl font-bold text-ink tabular-nums">
                                     {pad(Math.floor(secondsLeft / 60))}:{pad(secondsLeft % 60)}
                                 </span>
                             </div>
@@ -178,7 +178,7 @@ export default function FocusTimer() {
                             </button>
                             <button
                                 onClick={() => switchMode(mode)}
-                                className="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-sm hover:bg-gray-200"
+                                className="px-3 py-1.5 rounded-full bg-subtle text-ink-soft text-sm hover:bg-line"
                             >
                                 Reset
                             </button>
@@ -186,9 +186,9 @@ export default function FocusTimer() {
 
                         {/* Assignment picker */}
                         <div className="w-full">
-                            <label className="text-xs text-gray-400 mb-1 block">Studying for…</label>
+                            <label className="text-xs text-ink-faint mb-1 block">Studying for…</label>
                             <select value={selectedId} onChange={(e) => setSelectedId(e.target.value)}
-                                    className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                                    className="w-full text-xs bg-surface text-ink border border-line rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand">
                                 <option value="">General focus</option>
                                 {assignments.map((a) => (
                                     <option key={a.assignment_id} value={a.assignment_id}>

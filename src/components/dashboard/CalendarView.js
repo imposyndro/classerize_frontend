@@ -116,9 +116,9 @@ export default function CalendarView() {
                         ))}
                     </div>
                     <div className="flex items-center gap-3 mt-2 text-xs text-ink-faint">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> Light</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500 inline-block" /> Moderate</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> Heavy</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-success inline-block" /> Light</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning inline-block" /> Moderate</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-danger inline-block" /> Heavy</span>
                     </div>
                 </div>
             )}

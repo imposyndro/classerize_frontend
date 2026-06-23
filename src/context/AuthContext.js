@@ -66,8 +66,8 @@ export function withAuth(Component) {
 
         if (loading) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                    <p className="text-gray-500">Loading...</p>
+                <div className="min-h-screen flex items-center justify-center bg-app">
+                    <p className="text-ink-soft">Loading...</p>
                 </div>
             );
         }

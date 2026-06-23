@@ -5,7 +5,7 @@
 export default function TrendChart({ points = [], color = "#4F46E5" }) {
     if (points.length < 2) {
         return (
-            <p className="text-xs text-gray-400 italic py-2">
+            <p className="text-xs text-ink-faint italic py-2">
                 Not enough graded assignments to show a trend yet.
             </p>
         );

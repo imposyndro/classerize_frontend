@@ -73,7 +73,7 @@ function CoursePage({ params }) {
 
             <div className="card p-6 mb-6">
                 <h1 className="text-2xl font-bold text-ink">
-                    {course?.name || "Course Details"}
+                    {course?.course_name || "Course Details"}
                 </h1>
                 <p className="text-ink-soft mt-1">{course?.course_code || ""}</p>
                 <div className="mt-4 flex gap-6 text-sm text-ink-soft">
