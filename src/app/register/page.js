@@ -57,9 +57,11 @@ export default function RegisterPage() {
                         <input
                             type="text"
                             required
+                            autoComplete="username"
                             value={form.username}
                             onChange={(e) => setForm({ ...form, username: e.target.value })}
                             className={inputCls}
+                            suppressHydrationWarning
                         />
                     </div>
                     <div>
@@ -67,9 +69,11 @@ export default function RegisterPage() {
                         <input
                             type="email"
                             required
+                            autoComplete="email"
                             value={form.email}
                             onChange={(e) => setForm({ ...form, email: e.target.value })}
                             className={inputCls}
+                            suppressHydrationWarning
                         />
                     </div>
                     <div>
@@ -77,9 +81,11 @@ export default function RegisterPage() {
                         <input
                             type="password"
                             required
+                            autoComplete="new-password"
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
                             className={inputCls}
+                            suppressHydrationWarning
                         />
                         <p className="text-xs text-ink-faint mt-1">
                             8+ characters, including uppercase, lowercase, number, and special character

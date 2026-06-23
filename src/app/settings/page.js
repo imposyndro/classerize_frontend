@@ -9,11 +9,6 @@ const TABS = ["Linked Accounts", "Notifications", "AI", "Schedule", "Connected S
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-const useSearchParams = () => {
-    if (typeof window === "undefined") return new URLSearchParams();
-    return new URLSearchParams(window.location.search);
-};
-
 const MODEL_LABELS = {
     "gemini-2.5-flash-lite-preview-06-17": "Gemini 2.5 Flash-Lite (cheapest)",
     "gemini-2.5-flash": "Gemini 2.5 Flash (balanced)",
