@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { withAuth, useAuth } from "@/context/AuthContext";
 import apiClient from "@/lib/apiClient";
@@ -27,18 +28,18 @@ function SettingsPage() {
 
     // Redirect feedback (e.g. ?connected=calendar)
     const [globalMessage, setGlobalMessage] = useState(null);
+    const searchParams = useSearchParams();
     useEffect(() => {
-        const params = useSearchParams();
-        if (params.get("connected") === "calendar") {
+        if (searchParams.get("connected") === "calendar") {
             setGlobalMessage({ type: "success", text: "Google Calendar connected!" });
             setActiveTab("Connected Services");
             window.history.replaceState({}, "", "/settings");
-        } else if (params.get("error") === "calendar_auth_failed") {
+        } else if (searchParams.get("error") === "calendar_auth_failed") {
             setGlobalMessage({ type: "error", text: "Google Calendar connection failed. Please try again." });
             setActiveTab("Connected Services");
             window.history.replaceState({}, "", "/settings");
         }
-    }, []);
+    }, [searchParams]);
 
     // AI settings state
     const [aiSettings, setAISettings] = useState(null);
@@ -508,4 +509,13 @@ function SettingsPage() {
     );
 }
 
-export default withAuth(SettingsPage);
+// useSearchParams() must be wrapped in a Suspense boundary in the App Router.
+function SettingsPageWithSuspense() {
+    return (
+        <Suspense fallback={null}>
+            <SettingsPage />
+        </Suspense>
+    );
+}
+
+export default withAuth(SettingsPageWithSuspense);
