@@ -1,0 +1,9 @@
+model,occurredAt,inputTokens,cachedInputTokens,outputTokens,requestCount,label
+claude-sonnet-4-6,2026-06-01,42000,12000,8500,4,coding-agent
+claude-opus-4-8,2026-06-01,18000,0,6200,2,research
+gemini-2.5-flash,2026-06-02,95000,30000,14000,9,summarization
+claude-haiku-4-5,2026-06-02,60000,0,5000,12,chatbot
+gemini-2.5-pro,2026-06-03,22000,4000,9000,3,data-extraction
+claude-sonnet-4-6,2026-06-03,51000,20000,11000,6,coding-agent
+gemini-2.5-flash-lite,2026-06-04,120000,0,8000,15,chatbot
+claude-fable-5,2026-06-04,14000,0,7800,1,research

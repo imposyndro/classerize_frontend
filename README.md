@@ -20,6 +20,27 @@ You can start editing the page by modifying `app/[id].js`. The page auto-updates
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## AI Usage Tracker
+
+Classerize includes a built-in **AI Usage Tracker** at [`/ai-usage`](http://localhost:3000/ai-usage)
+(linked from the dashboard navbar). It tracks, visualizes, and helps optimize AI spend across
+Claude, Gemini, and other models — with a KPI dashboard, cost/token trends, model comparison,
+optimization insights, and CSV/JSON import.
+
+Unlike the rest of the app (which talks to the external backend), this section is self-contained:
+it uses **Prisma + SQLite** with its own API routes under `/api/ai-usage/*`.
+
+First-time setup:
+
+```bash
+cp .env.example .env          # sets DATABASE_URL="file:./dev.db"
+npx prisma migrate deploy     # create prisma/dev.db and apply migrations
+npm run seed                  # pricing catalog + ~80 days of sample usage
+```
+
+Reseed / reset anytime with `npm run seed` or `npm run db:reset`. For production, point
+`DATABASE_URL` at Postgres and change the datasource `provider` in `prisma/schema.prisma`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

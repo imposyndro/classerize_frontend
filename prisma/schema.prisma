@@ -1,0 +1,50 @@
+// Prisma schema for the AI Usage Tracker.
+// Dev uses SQLite (file-based, zero config). To deploy on Postgres, change
+// `provider` to "postgresql" and point DATABASE_URL at your instance.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// A model in the pricing catalog. Prices are USD per 1,000,000 tokens.
+// SQLite has no native enums, so `provider` is a plain string
+// ("Anthropic" | "Google" | "OpenAI" | ...).
+model Model {
+  id                      String   @id @default(cuid())
+  name                    String   @unique // e.g. "claude-opus-4-8"
+  displayName             String // e.g. "Claude Opus 4.8"
+  provider                String // e.g. "Anthropic"
+  inputPricePerMTok       Float
+  cachedInputPricePerMTok Float    @default(0)
+  outputPricePerMTok      Float
+  contextWindow           Int      @default(0)
+  active                  Boolean  @default(true)
+  createdAt               DateTime @default(now())
+
+  usageRecords UsageRecord[]
+}
+
+// A single logged usage event (one row per manual entry or imported line).
+model UsageRecord {
+  id                String   @id @default(cuid())
+  occurredAt        DateTime
+  model             Model    @relation(fields: [modelId], references: [id])
+  modelId           String
+  inputTokens       Int      @default(0)
+  cachedInputTokens Int      @default(0)
+  outputTokens      Int      @default(0)
+  requestCount      Int      @default(1)
+  costUsd           Float    @default(0) // computed on write via lib/pricing.js
+  label             String? // free-form tag / project, powers cost-per-task
+  source            String   @default("manual") // "manual" | "import" | "api"
+  notes             String?
+  createdAt         DateTime @default(now())
+
+  @@index([occurredAt])
+  @@index([modelId])
+}
