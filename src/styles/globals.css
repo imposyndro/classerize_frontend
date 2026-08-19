@@ -19,3 +19,45 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* --- AI Usage Tracker theme tokens (rgb triples for tailwind surface/content) --- */
+:root {
+  --surface: 255 255 255;
+  --surface-muted: 245 246 250;
+  --surface-border: 226 228 235;
+  --content: 17 20 28;
+  --content-muted: 100 108 124;
+}
+
+.dark {
+  --surface: 21 24 33;
+  --surface-muted: 11 13 20;
+  --surface-border: 38 42 54;
+  --content: 237 240 247;
+  --content-muted: 148 156 172;
+}
+
+/* Heading font is scoped to the AI Usage section so LMS pages are unaffected. */
+@layer base {
+  .ai-usage-scope {
+    font-feature-settings: "cv11", "ss01";
+  }
+  .ai-usage-scope h1,
+  .ai-usage-scope h2,
+  .ai-usage-scope h3,
+  .ai-usage-scope h4 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl2 border border-surface-border bg-surface shadow-card;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-surface-border bg-surface-muted px-3 py-1 text-xs font-medium text-content-muted;
+  }
+  /* Subtle scrollbars in dark mode */
+  .dark ::-webkit-scrollbar { width: 10px; height: 10px; }
+  .dark ::-webkit-scrollbar-thumb { @apply rounded-full bg-surface-border; }
+}

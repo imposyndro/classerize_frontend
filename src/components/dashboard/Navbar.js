@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const Navbar = () => {
     const [username, setUsername] = useState('');
@@ -34,7 +35,15 @@ const Navbar = () => {
     return (
         <nav className="flex items-center justify-between bg-blue-600 p-4 text-white">
             <div className="text-xl font-bold">Classerize</div>
-            <div>{username ? `Welcome, ${username}` : 'Loading...'}</div>
+            <div className="flex items-center gap-6">
+                <Link
+                    href="/ai-usage"
+                    className="rounded-md px-3 py-1.5 text-sm font-medium transition hover:bg-blue-500"
+                >
+                    AI Usage
+                </Link>
+                <span>{username ? `Welcome, ${username}` : 'Loading...'}</span>
+            </div>
         </nav>
     );
 };
